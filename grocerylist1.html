@@ -236,6 +236,18 @@
     var fbReady = true;
     var fbIgnoreNext = false;
     var localDirty = false;
+    var fbConnected = false;
+    
+    // Monitor Firebase connection state
+    db.ref('.info/connected').on('value', function(snap) {
+      fbConnected = snap.val() === true;
+      var el = document.getElementById('sync-status');
+      if (el && !fbConnected) {
+        el.textContent = '🔴 Offline — no connection to cloud';
+      } else if (el && fbConnected && el.textContent.indexOf('Offline') !== -1) {
+        el.textContent = '🟢 Connected to cloud';
+      }
+    });
     
     // Initial load from cloud
     fbRef.once('value').then(function(snap) {
@@ -249,7 +261,8 @@
       startRealtimeSync();
     }).catch(function(err) {
       console.log('Firebase initial load error:', err.message);
-      updateSyncStatus(null, false, true);
+      var el = document.getElementById('sync-status');
+      if (el) el.textContent = '❌ Error: ' + err.message;
       startRealtimeSync();
     });
     
@@ -292,11 +305,14 @@
     function startRealtimeSync() {
       fbRef.on('value', function(snap) {
         if (fbIgnoreNext) { fbIgnoreNext = false; return; }
-        if (localDirty) return; // Don't overwrite pending local changes
+        if (localDirty) return;
         var cloud = snap.val();
         if (cloud) {
           applyCloudData(cloud);
         }
+      }, function(err) {
+        var el = document.getElementById('sync-status');
+        if (el) el.textContent = '❌ Listener error: ' + err.message;
       });
     }
     
@@ -315,7 +331,8 @@
       }).catch(function(err) {
         console.log('Firebase sync error:', err.message);
         fbIgnoreNext = false;
-        updateSyncStatus(null, false, true);
+        var el = document.getElementById('sync-status');
+        if (el) el.textContent = '❌ Sync error: ' + err.message;
       });
     }
     

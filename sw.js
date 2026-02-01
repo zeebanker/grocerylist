@@ -1,4 +1,4 @@
-var CACHE_NAME = 'grocery-list-v4';
+var CACHE_NAME = 'grocery-list-v5';
 var URLS_TO_CACHE = [
   './',
   './grocerylist1.html',

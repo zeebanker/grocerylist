@@ -50,6 +50,9 @@
     .showcase-image { width: 100%; height: 100%; object-fit: cover; }
     .welcome-title { font-family: 'Fredoka', sans-serif; font-size: 42px; font-weight: 700; color: var(--text-primary); margin: 0 0 8px; }
     .welcome-text { font-size: 16px; color: var(--text-secondary); margin: 0 0 20px; line-height: 1.6; }
+    .sync-status { font-size: 12px; color: var(--text-secondary); opacity: 0.7; margin: 0; padding: 8px 16px; background: rgba(76,175,80,0.08); border-radius: 12px; display: inline-block; transition: opacity 0.3s ease; }
+    .sync-status.flash { animation: syncFlash 1s ease; }
+    @keyframes syncFlash { 0% { background: rgba(76,175,80,0.25); } 100% { background: rgba(76,175,80,0.08); } }
     .stores-container { min-height: 100vh; background: linear-gradient(145deg, var(--bg1) 0%, var(--bg2) 50%, var(--bg3) 100%); display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease; }
     .stores-inner { width: 100%; max-width: 360px; padding: 24px; }
     .stores-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; position: relative; }
@@ -183,6 +186,7 @@
         </div>
         <h1 class="welcome-title">Welcome!</h1>
         <p class="welcome-text">Your simple, beautiful grocery list.<br>Eat smart, shop smarter!</p>
+        <div id="sync-status" class="sync-status">☁️ Connecting...</div>
       </div>
     </div>
   </div>
@@ -238,12 +242,14 @@
       var cloud = snap.val();
       if (cloud) {
         applyCloudData(cloud);
+      } else {
+        updateSyncStatus(null, false);
       }
       syncToCloud();
-      // Start real-time listener after initial load
       startRealtimeSync();
     }).catch(function(err) {
       console.log('Firebase initial load error:', err.message);
+      updateSyncStatus(null, false, true);
       startRealtimeSync();
     });
     
@@ -251,7 +257,6 @@
       var changed = false;
       if (cloud.items) {
         var cloudItems = JSON.parse(cloud.items);
-        // Replace local items with cloud (cloud is source of truth)
         items = cloudItems;
         localStorage.setItem('groceryListByStore', JSON.stringify(items));
         changed = true;
@@ -274,6 +279,9 @@
         localStorage.setItem('groceryItemLocations', JSON.stringify(itemLocations));
         changed = true;
       }
+      if (cloud.lastUpdated) {
+        updateSyncStatus(cloud.lastUpdated, false);
+      }
       if (changed) {
         if (currentStore) renderList();
         renderStoresGrid();
@@ -295,15 +303,19 @@
     function syncToCloud() {
       if (!fbReady) return;
       fbIgnoreNext = true;
+      var now = Date.now();
       fbRef.set({
         items: JSON.stringify(items),
         purchaseHistory: JSON.stringify(purchaseHistory),
         customItems: JSON.stringify(customItems),
         itemLocations: JSON.stringify(itemLocations),
-        lastUpdated: Date.now()
+        lastUpdated: now
+      }).then(function() {
+        updateSyncStatus(now, true);
       }).catch(function(err) {
         console.log('Firebase sync error:', err.message);
         fbIgnoreNext = false;
+        updateSyncStatus(null, false, true);
       });
     }
     
@@ -316,6 +328,30 @@
         localDirty = false;
         syncToCloud();
       }, 1000);
+    }
+    
+    // Sync status display
+    function updateSyncStatus(timestamp, isLocal, isError) {
+      var el = document.getElementById('sync-status');
+      if (!el) return;
+      if (isError) {
+        el.textContent = '⚠️ Sync failed — retrying...';
+        return;
+      }
+      if (!timestamp) {
+        el.textContent = '☁️ No data yet';
+        return;
+      }
+      var d = new Date(timestamp);
+      var h = d.getHours(); var ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12; if (h === 0) h = 12;
+      var m = (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+      var s = (d.getSeconds() < 10 ? '0' : '') + d.getSeconds();
+      var label = isLocal ? '⬆️ Pushed' : '⬇️ Received';
+      el.textContent = label + ' ' + h + ':' + m + ':' + s + ' ' + ampm;
+      el.classList.remove('flash');
+      void el.offsetWidth; // trigger reflow
+      el.classList.add('flash');
     }
     
     const IMAGES = {

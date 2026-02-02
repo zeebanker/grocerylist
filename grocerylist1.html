@@ -71,6 +71,9 @@
     .store-card-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px; }
     .store-name-label { font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700; color: var(--text-primary); text-align: center; line-height: 1.2; max-width: 100%; }
     .store-presence-dot { width: 10px; height: 10px; border-radius: 50%; position: absolute; top: 4px; left: 4px; box-shadow: 0 0 0 3px rgba(255,255,255,0.9); animation: pulse 1.8s ease-in-out infinite; }
+    .in-store-banner { display: flex; align-items: center; gap: 8px; padding: 8px 14px; margin-bottom: 12px; border-radius: 12px; background: rgba(255,255,255,0.85); box-shadow: 0 1px 6px rgba(0,0,0,0.06); font-size: 13px; font-weight: 600; color: var(--text-primary); animation: pillFadeIn 0.4s ease both; }
+    .in-store-banner-dot { width: 8px; height: 8px; border-radius: 50%; animation: pulse 1.8s ease-in-out infinite; flex-shrink: 0; }
+    .in-store-banner-text { flex: 1; }
     .store-card { width: 100%; aspect-ratio: 1 / 1; background: var(--logo-bg); border-radius: 50%; border: none; box-shadow: 0 8px 24px var(--logo-shadow); cursor: pointer; padding: 8px; overflow: hidden; transition: transform 0.2s ease, box-shadow 0.2s ease; animation: scaleIn 0.4s ease-out both; display: flex; align-items: center; justify-content: center; }
     .store-card-wrapper:nth-child(1) .store-card { animation-delay: 0s; }
     .store-card-wrapper:nth-child(2) .store-card { animation-delay: 0.08s; }
@@ -217,7 +220,6 @@
         <p class="welcome-text">Your simple, beautiful grocery list.<br>Eat smart, shop smarter!</p>
         <div id="sync-status" class="sync-status">☁️ Connecting...</div>
         <div id="activity-feed" class="activity-feed"></div>
-        <div id="presence-debug" style="font-size:10px; color:#999; margin-top:8px; word-break:break-all;"></div>
       </div>
     </div>
   </div>
@@ -230,6 +232,7 @@
     <div class="top-bar">
       <button class="back-button" onclick="backToStores()"><span style="margin-top: -2px;">‹</span></button>
     </div>
+    <div id="in-store-banner" style="display:none;"></div>
     <div class="header">
       <div class="header-logo-container" onclick="clearList()"><img id="header-logo" src="" alt="" class="header-logo"></div>
       <p id="item-count" class="subtitle"></p>
@@ -305,11 +308,8 @@
       } else {
         data.status = 'browsing';
       }
-      myPresenceRef.set(data).then(function() {
-        console.log('Presence SET ok:', storeId || 'browsing');
-      }).catch(function(err) {
+      myPresenceRef.set(data).catch(function(err) {
         console.log('Presence SET failed:', err.message);
-        updatePresenceDebug('⚠️ Write failed: ' + err.message);
       });
     }
     
@@ -319,22 +319,16 @@
     function startPresenceListener() {
       presenceRef.on('value', function(snap) {
         activePresence = snap.val() || {};
-        console.log('Presence data:', JSON.stringify(activePresence));
         cleanStalePresence();
         renderActivityFeed();
+        renderInStoreBanner();
         // Also refresh stores grid if visible
         if (!document.getElementById('stores-screen').classList.contains('hidden')) {
           renderStoresGrid();
         }
       }, function(err) {
         console.log('Presence LISTEN failed:', err.message);
-        updatePresenceDebug('⚠️ Listen failed: ' + err.message);
       });
-    }
-    
-    function updatePresenceDebug(msg) {
-      var el = document.getElementById('presence-debug');
-      if (el) el.textContent = msg;
     }
     
     function renderActivityFeed() {
@@ -361,9 +355,6 @@
         }
       });
       
-      // Update debug line
-      updatePresenceDebug('Sessions: ' + totalSessions + ' | My ID: ' + sessionId.slice(-6));
-      
       var html = '';
       
       // Show store-specific pills
@@ -389,6 +380,32 @@
       }
       
       feed.innerHTML = html;
+    }
+    
+    function renderInStoreBanner() {
+      var banner = document.getElementById('in-store-banner');
+      if (!banner || !currentStore) { if (banner) banner.style.display = 'none'; return; }
+      
+      var cutoff = Date.now() - (2 * 60 * 60 * 1000);
+      var othersCount = 0;
+      Object.keys(activePresence).forEach(function(sid) {
+        if (sid === sessionId) return;
+        var entry = activePresence[sid];
+        if (entry && entry.storeId === currentStore.id && entry.timestamp && entry.timestamp > cutoff) {
+          othersCount++;
+        }
+      });
+      
+      if (othersCount === 0) {
+        banner.style.display = 'none';
+        return;
+      }
+      
+      var who = othersCount === 1 ? 'Someone else is' : othersCount + ' others are';
+      banner.className = 'in-store-banner';
+      banner.style.display = 'flex';
+      banner.innerHTML = '<span class="in-store-banner-dot" style="background: ' + currentStore.color + ';"></span>' +
+        '<span class="in-store-banner-text">' + who + ' also shopping here</span>';
     }
     
     function formatTimeAgo(ts) {
@@ -867,6 +884,7 @@
         document.getElementById('add-button').style.boxShadow = '0 4px 16px '+currentStore.color+'50';
         document.getElementById('history-btn').style.color = currentStore.color;
         renderList();
+        renderInStoreBanner();
       }, 300);
     }
     

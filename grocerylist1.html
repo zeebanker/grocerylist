@@ -143,17 +143,25 @@
     .history-title { font-family: 'Fredoka', sans-serif; font-size: 20px; font-weight: 600; color: var(--text-primary); margin: 0; }
     .history-close { width: 36px; height: 36px; border: none; border-radius: 50%; background: var(--divider-bg); font-size: 20px; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; }
     .history-close:active { transform: scale(0.9); }
-    .history-body { overflow: auto; -webkit-overflow-scrolling: touch; padding: 0 0 24px; flex: 1; }
-    .history-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .history-table thead { position: sticky; top: 0; z-index: 2; }
+    .history-body { overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding: 0 0 24px; flex: 1; }
+    .history-top-scroll { overflow-x: auto; overflow-y: hidden; flex-shrink: 0; border-bottom: 1px solid var(--divider); }
+    .history-top-scroll::-webkit-scrollbar { height: 6px; }
+    .history-top-scroll::-webkit-scrollbar-track { background: var(--divider-bg); border-radius: 3px; }
+    .history-top-scroll::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 3px; }
+    .history-top-scroll-spacer { height: 1px; }
+    .history-scroll-container { overflow-x: auto; }
+    .history-scroll-container::-webkit-scrollbar { height: 0; width: 0; display: none; }
+    .history-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+    .history-table thead { position: sticky; top: 0; z-index: 4; }
     .history-table th { background: var(--history-th-bg); padding: 10px 8px; font-weight: 700; color: var(--text-primary); white-space: nowrap; border-bottom: 2px solid var(--history-th-border); }
-    .history-table th.item-col { text-align: left; padding-left: 16px; min-width: 140px; position: sticky; left: 0; z-index: 3; background: var(--history-th-bg); }
+    .history-table th.item-col { text-align: left; padding-left: 16px; min-width: 140px; max-width: 180px; position: sticky; left: 0; z-index: 5; background: var(--history-th-bg); box-shadow: 4px 0 8px -2px rgba(0,0,0,0.08); }
     .history-table th.total-col { text-align: center; min-width: 48px; }
     .history-table th.date-col { text-align: center; min-width: 52px; font-size: 11px; }
     .history-table td { padding: 8px; border-bottom: 1px solid var(--divider); }
-    .history-table td.item-cell { text-align: left; padding-left: 16px; font-weight: 500; color: var(--text-item); position: sticky; left: 0; background: var(--panel-bg); z-index: 1; }
+    .history-table td.item-cell { text-align: left; padding-left: 16px; font-weight: 500; color: var(--text-item); position: sticky; left: 0; z-index: 2; background: var(--panel-bg); box-shadow: 4px 0 8px -2px rgba(0,0,0,0.08); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
     .history-table td.count-cell { text-align: center; color: var(--text-secondary); font-weight: 600; }
-    .history-table td.count-cell-active { text-align: center; color: var(--text-primary); font-weight: 800; background: var(--history-active-bg); border-radius: 6px; }
+    .history-table td.count-cell-active { text-align: center; color: var(--text-primary); font-weight: 800; }
+    .history-table td.count-cell-active-highlight { text-align: center; color: var(--text-primary); font-weight: 800; background: var(--history-active-bg); }
     .history-table tr:nth-child(even) td { background-color: var(--history-even-bg); }
     .history-table tr:nth-child(even) td.item-cell { background-color: var(--history-even-bg); }
     .history-empty { text-align: center; padding: 48px 24px; color: var(--text-muted); font-size: 15px; }
@@ -234,6 +242,7 @@
         <h2 class="history-title" id="history-title">Purchase History</h2>
         <button class="history-close" onclick="closeHistory()">×</button>
       </div>
+      <div id="history-top-scroll" class="history-top-scroll" style="display:none;"><div id="history-top-scroll-spacer" class="history-top-scroll-spacer"></div></div>
       <div class="history-body" id="history-body"></div>
     </div>
   </div>
@@ -1122,7 +1131,10 @@
       if (!currentStore) return;
       var storeHist = purchaseHistory[currentStore.id];
       var body = document.getElementById('history-body');
+      var topScroll = document.getElementById('history-top-scroll');
+      var topSpacer = document.getElementById('history-top-scroll-spacer');
       document.getElementById('history-title').textContent = currentStore.name + ' — Purchase History';
+      topScroll.style.display = 'none';
       
       if (!storeHist || Object.keys(storeHist).length === 0) {
         body.innerHTML = '<div class="history-empty">No purchase history yet.<br>Check off items to start tracking!</div>';
@@ -1162,7 +1174,7 @@
         return parseInt(parts[1]) + '/' + parseInt(parts[2]);
       }
       
-      var html = '<div style="overflow-x: auto;"><table class="history-table"><thead><tr>';
+      var html = '<div id="history-scroll-container" class="history-scroll-container"><table class="history-table"><thead><tr>';
       html += '<th class="item-col">Item</th>';
       html += '<th class="total-col">Total</th>';
       dates.forEach(function(d) {
@@ -1172,8 +1184,8 @@
       
       rows.forEach(function(row) {
         html += '<tr>';
-        html += '<td class="item-cell">' + escapeHtml(row.name) + '</td>';
-        html += '<td class="count-cell-active">' + row.total + '</td>';
+        html += '<td class="item-cell" title="' + escapeHtml(row.name) + '">' + escapeHtml(row.name) + '</td>';
+        html += '<td class="count-cell-active-highlight">' + row.total + '</td>';
         dates.forEach(function(d) {
           var c = row.dateCounts[d] || 0;
           html += '<td class="' + (c > 0 ? 'count-cell-active' : 'count-cell') + '">' + (c > 0 ? c : '·') + '</td>';
@@ -1184,6 +1196,31 @@
       html += '</tbody></table></div>';
       body.innerHTML = html;
       document.getElementById('history-overlay').classList.remove('hidden');
+      
+      // Setup synced top scrollbar if more than 3 date columns
+      if (dates.length > 3) {
+        var scrollContainer = document.getElementById('history-scroll-container');
+        // Wait a frame for layout
+        requestAnimationFrame(function() {
+          var tableWidth = scrollContainer.scrollWidth;
+          topSpacer.style.width = tableWidth + 'px';
+          topScroll.style.display = 'block';
+          
+          var syncing = false;
+          topScroll.onscroll = function() {
+            if (syncing) return;
+            syncing = true;
+            scrollContainer.scrollLeft = topScroll.scrollLeft;
+            syncing = false;
+          };
+          scrollContainer.onscroll = function() {
+            if (syncing) return;
+            syncing = true;
+            topScroll.scrollLeft = scrollContainer.scrollLeft;
+            syncing = false;
+          };
+        });
+      }
     }
     
     function closeHistory() {

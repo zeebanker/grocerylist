@@ -732,6 +732,14 @@
       debouncedSync();
     }
     
+    function localDateStr(d) {
+      if (!d) d = new Date();
+      var y = d.getFullYear();
+      var m = ('0' + (d.getMonth() + 1)).slice(-2);
+      var day = ('0' + d.getDate()).slice(-2);
+      return y + '-' + m + '-' + day;
+    }
+    
     function recordPurchase(storeId, itemText) {
       if (!purchaseHistory[storeId]) purchaseHistory[storeId] = {};
       var key = itemText.toLowerCase().trim();
@@ -739,7 +747,7 @@
         purchaseHistory[storeId][key] = { count: 0, dates: [] };
       }
       purchaseHistory[storeId][key].count++;
-      purchaseHistory[storeId][key].dates.push(new Date().toISOString().split('T')[0]);
+      purchaseHistory[storeId][key].dates.push(localDateStr());
       savePurchaseHistory();
     }
     
@@ -1575,8 +1583,7 @@
       var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      var today = new Date().toISOString().split('T')[0];
-      a.download = 'grocery-history-' + today + '.csv';
+      a.download = 'grocery-history-' + localDateStr() + '.csv';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

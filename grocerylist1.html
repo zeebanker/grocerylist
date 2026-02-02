@@ -150,7 +150,7 @@
     .empty-state { text-align: center; padding: 48px 24px; }
     .empty-logo-container { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; margin: 0 auto; opacity: 0.4; background: var(--logo-bg); box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; padding: 12px; }
     .empty-logo { max-width: 100%; max-height: 100%; object-fit: contain; }
-    .history-btn { display: inline-block; margin-top: 8px; padding: 8px 20px; font-size: 13px; font-weight: 700; font-family: 'Nunito', sans-serif; border: none; border-radius: 20px; background: var(--back-btn-bg); color: var(--text-secondary); cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); letter-spacing: 0.5px; transition: transform 0.2s ease; }
+    .history-btn { display: inline-flex; align-items: center; justify-content: center; height: 44px; padding: 0 16px; font-size: 13px; font-weight: 700; font-family: 'Nunito', sans-serif; border: none; border-radius: 14px; background: var(--back-btn-bg); color: var(--text-secondary); cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); letter-spacing: 0.5px; transition: transform 0.2s ease; }
     .history-btn:active { transform: scale(0.95); }
     .history-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--overlay-bg); z-index: 100; display: flex; align-items: flex-end; justify-content: center; animation: fadeInOverlay 0.25s ease; }
     .history-panel { background: var(--panel-bg); border-radius: 24px 24px 0 0; width: 100%; max-width: 540px; max-height: 85vh; display: flex; flex-direction: column; animation: slideUp 0.3s ease; }
@@ -234,12 +234,12 @@
   <div id="list-screen" class="list-container hidden">
     <div class="top-bar">
       <button class="back-button" onclick="backToStores()"><span style="margin-top: -2px;">‹</span></button>
+      <button id="history-btn" class="history-btn" onclick="showHistory()">📋 History</button>
     </div>
     <div id="in-store-banner" style="display:none;"></div>
     <div class="header">
       <div class="header-logo-container" onclick="clearList()"><img id="header-logo" src="" alt="" class="header-logo"></div>
       <p id="item-count" class="subtitle"></p>
-      <button id="history-btn" class="history-btn" onclick="showHistory()">📋 History</button>
     </div>
     <div class="input-container">
       <input type="text" id="item-input" class="item-input" placeholder="Add an item..." onkeydown="handleKeyDown(event)">

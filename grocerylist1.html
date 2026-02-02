@@ -86,6 +86,18 @@
     .item-input:focus { box-shadow: 0 2px 12px rgba(0,0,0,0.06), inset 0 0 0 2px var(--store-color, #81c784); }
     .add-button { width: 56px; height: 56px; border-radius: 16px; border: none; color: white; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     .add-button:active { transform: scale(0.95); }
+    .search-container { position: relative; margin-bottom: 16px; }
+    .search-input { width: 100%; padding: 12px 40px 12px 42px; font-size: 15px; border: none; border-radius: 14px; background: var(--input-bg); box-shadow: 0 1px 6px rgba(0,0,0,0.04), inset 0 0 0 1.5px var(--input-border); outline: none; font-family: 'Nunito', sans-serif; color: var(--text-item); transition: box-shadow 0.3s ease; }
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-input:focus { box-shadow: 0 1px 6px rgba(0,0,0,0.04), inset 0 0 0 1.5px var(--store-accent, #81c784); }
+    .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; fill: var(--text-muted); pointer-events: none; transition: fill 0.2s ease; }
+    .search-container:focus-within .search-icon { fill: var(--store-accent, #81c784); }
+    .search-clear { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; border: none; border-radius: 50%; background: var(--divider-bg); color: var(--text-secondary); font-size: 16px; cursor: pointer; display: none; align-items: center; justify-content: center; padding: 0; transition: background 0.2s ease, transform 0.15s ease; }
+    .search-clear.visible { display: flex; }
+    .search-clear:active { transform: translateY(-50%) scale(0.85); background: var(--divider); }
+    .search-match-count { font-size: 12px; color: var(--text-muted); text-align: center; padding: 4px 0 2px; font-weight: 600; }
+    .search-no-results { text-align: center; padding: 32px 24px; color: var(--text-muted); font-size: 15px; }
+    .search-no-results-emoji { font-size: 36px; margin-bottom: 8px; }
     .items-list { display: flex; flex-direction: column; gap: 10px; }
     .item-wrapper { animation: itemSlideIn 0.35s ease both; }
     .item-wrapper.item-exit { animation: itemSlideOut 0.3s ease both; }
@@ -208,6 +220,12 @@
       <input type="text" id="item-input" class="item-input" placeholder="Add an item..." onkeydown="handleKeyDown(event)">
       <button id="add-button" class="add-button" onclick="addItem()">+</button>
     </div>
+    <div class="search-container">
+      <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="text" id="search-input" class="search-input" placeholder="Filter items..." oninput="onSearchInput()" onkeydown="if(event.key==='Escape'){clearSearch()}">
+      <button id="search-clear" class="search-clear" onclick="clearSearch()">×</button>
+    </div>
+    <div id="search-match-count" class="search-match-count" style="display:none;"></div>
     <div id="items-list" class="items-list"></div>
   </div>
   <div id="history-overlay" class="history-overlay hidden" onclick="closeHistoryOverlay(event)">
@@ -236,18 +254,6 @@
     var fbReady = true;
     var fbIgnoreNext = false;
     var localDirty = false;
-    var fbConnected = false;
-    
-    // Monitor Firebase connection state
-    db.ref('.info/connected').on('value', function(snap) {
-      fbConnected = snap.val() === true;
-      var el = document.getElementById('sync-status');
-      if (el && !fbConnected) {
-        el.textContent = '🔴 Offline — no connection to cloud';
-      } else if (el && fbConnected && el.textContent.indexOf('Offline') !== -1) {
-        el.textContent = '🟢 Connected to cloud';
-      }
-    });
     
     // Initial load from cloud
     fbRef.once('value').then(function(snap) {
@@ -261,8 +267,7 @@
       startRealtimeSync();
     }).catch(function(err) {
       console.log('Firebase initial load error:', err.message);
-      var el = document.getElementById('sync-status');
-      if (el) el.textContent = '❌ Error: ' + err.message;
+      updateSyncStatus(null, false, true);
       startRealtimeSync();
     });
     
@@ -305,14 +310,11 @@
     function startRealtimeSync() {
       fbRef.on('value', function(snap) {
         if (fbIgnoreNext) { fbIgnoreNext = false; return; }
-        if (localDirty) return;
+        if (localDirty) return; // Don't overwrite pending local changes
         var cloud = snap.val();
         if (cloud) {
           applyCloudData(cloud);
         }
-      }, function(err) {
-        var el = document.getElementById('sync-status');
-        if (el) el.textContent = '❌ Listener error: ' + err.message;
       });
     }
     
@@ -331,8 +333,7 @@
       }).catch(function(err) {
         console.log('Firebase sync error:', err.message);
         fbIgnoreNext = false;
-        var el = document.getElementById('sync-status');
-        if (el) el.textContent = '❌ Sync error: ' + err.message;
+        updateSyncStatus(null, false, true);
       });
     }
     
@@ -682,6 +683,13 @@
     
     function selectStore(storeId) {
       currentStore = STORES.find(function(s) { return s.id === storeId; });
+      searchFilter = '';
+      var searchInput = document.getElementById('search-input');
+      if (searchInput) { searchInput.value = ''; }
+      var searchClear = document.getElementById('search-clear');
+      if (searchClear) { searchClear.classList.remove('visible'); }
+      var matchCount = document.getElementById('search-match-count');
+      if (matchCount) { matchCount.style.display = 'none'; }
       document.getElementById('stores-screen').classList.add('fade-out');
       setTimeout(function() {
         document.getElementById('stores-screen').classList.add('hidden');
@@ -700,6 +708,7 @@
     }
     
     function backToStores() {
+      clearSearch();
       document.getElementById('list-screen').classList.add('fade-out');
       setTimeout(function() {
         document.getElementById('list-screen').classList.add('hidden');
@@ -718,15 +727,63 @@
       }
     }
     
+    var searchFilter = '';
+    
+    function onSearchInput() {
+      var input = document.getElementById('search-input');
+      searchFilter = input.value.trim().toLowerCase();
+      var clearBtn = document.getElementById('search-clear');
+      if (searchFilter) {
+        clearBtn.classList.add('visible');
+      } else {
+        clearBtn.classList.remove('visible');
+      }
+      renderList();
+    }
+    
+    function clearSearch() {
+      var input = document.getElementById('search-input');
+      input.value = '';
+      searchFilter = '';
+      document.getElementById('search-clear').classList.remove('visible');
+      document.getElementById('search-match-count').style.display = 'none';
+      renderList();
+    }
+    
+    function matchesFilter(item) {
+      if (!searchFilter) return true;
+      var text = item.text.toLowerCase();
+      // Match if item text contains all words in the search query
+      var words = searchFilter.split(/\s+/).filter(function(w) { return w.length > 0; });
+      return words.every(function(word) { return text.indexOf(word) !== -1; });
+    }
+    
     function renderList() {
       var storeItems = items[currentStore.id] || [];
       var unchecked = storeItems.filter(function(item) { return !item.checked; });
       var checked = storeItems.filter(function(item) { return item.checked; });
       
-      var withQuantity = unchecked.filter(function(item) { return item.quantity && item.quantity.trim() !== ''; });
-      var withoutQuantity = unchecked.filter(function(item) { return !item.quantity || item.quantity.trim() === ''; });
+      // Apply search filter
+      var filteredUnchecked = unchecked.filter(matchesFilter);
+      var filteredChecked = checked.filter(matchesFilter);
       
-      document.getElementById('item-count').textContent = withQuantity.length === 0 ? '' : withQuantity.length + ' item' + (withQuantity.length !== 1 ? 's' : '') + ' to buy';
+      var withQuantity = filteredUnchecked.filter(function(item) { return item.quantity && item.quantity.trim() !== ''; });
+      var withoutQuantity = filteredUnchecked.filter(function(item) { return !item.quantity || item.quantity.trim() === ''; });
+      
+      // Show match count when filtering
+      var matchCountEl = document.getElementById('search-match-count');
+      if (searchFilter) {
+        var total = withQuantity.length + withoutQuantity.length + filteredChecked.length;
+        var allTotal = storeItems.length;
+        matchCountEl.textContent = total + ' of ' + allTotal + ' items';
+        matchCountEl.style.display = 'block';
+      } else {
+        matchCountEl.style.display = 'none';
+      }
+      
+      // Item count always uses unfiltered data for the "to buy" header
+      var realWithQuantity = unchecked.filter(function(item) { return item.quantity && item.quantity.trim() !== ''; });
+      document.getElementById('item-count').textContent = realWithQuantity.length === 0 ? '' : realWithQuantity.length + ' item' + (realWithQuantity.length !== 1 ? 's' : '') + ' to buy';
       
       var listEl = document.getElementById('items-list');
       var html = '';
@@ -778,9 +835,9 @@
         html += '</div>';
       });
       
-      if (checked.length > 0) {
+      if (filteredChecked.length > 0) {
         html += '<div class="divider"><span class="divider-text">✓ '+checked.length+' purchased</span><button class="clear-button" onclick="clearChecked()">×</button></div>';
-        checked.forEach(function(item) {
+        filteredChecked.forEach(function(item) {
           var loc = getItemLocation(currentStore.id, item.text);
           var hasLoc = loc ? ' has-loc' : '';
           html += '<div class="item-row-checked"><button class="checkbox-checked" style="background: linear-gradient(135deg, '+currentStore.color+'dd 0%, '+currentStore.color+' 100%)" onclick="toggleItem('+item.id+')">✓</button><span class="item-text-checked">'+escapeHtml(item.text)+'</span><button class="loc-pin'+hasLoc+'" style="opacity:0.2" onclick="pinTap('+item.id+')"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg></button><input type="text" class="quantity-input-checked" value="'+escapeHtml(item.quantity || '')+'" style="width: '+Math.max(80, Math.min((item.quantity || '').length * 12 + 20, 220))+'px;" maxlength="20" placeholder="Qty" onblur="updateQuantity('+item.id+', this.value)" onkeydown="handleQtyKey(event, '+item.id+', this)"></div>';
@@ -789,6 +846,8 @@
       
       if (storeItems.length === 0) {
         html = '<div class="empty-state"><div class="empty-logo-container"><img src="'+currentStore.image+'" alt="'+currentStore.name+'" class="empty-logo"></div></div>';
+      } else if (searchFilter && withQuantity.length === 0 && withoutQuantity.length === 0 && filteredChecked.length === 0) {
+        html = '<div class="search-no-results"><div class="search-no-results-emoji">🔍</div>No items matching "'+escapeHtml(searchFilter)+'"</div>';
       }
       
       listEl.innerHTML = html;

@@ -217,6 +217,7 @@
         <p class="welcome-text">Your simple, beautiful grocery list.<br>Eat smart, shop smarter!</p>
         <div id="sync-status" class="sync-status">☁️ Connecting...</div>
         <div id="activity-feed" class="activity-feed"></div>
+        <div id="presence-debug" style="font-size:10px; color:#999; margin-top:8px; word-break:break-all;"></div>
       </div>
     </div>
   </div>
@@ -275,8 +276,9 @@
     var localDirty = false;
     
     // --- Presence system ---
+    // Use a SEPARATE top-level path so presence writes don't trigger the data sync listener on fbRef
     var sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-    var presenceRef = db.ref('households/karkart-family/presence');
+    var presenceRef = db.ref('presence/karkart-family');
     var myPresenceRef = presenceRef.child(sessionId);
     var activePresence = {};
     
@@ -297,16 +299,16 @@
     }
     
     function setMyPresence(storeId) {
-      if (!fbReady) return;
       if (storeId) {
-        myPresenceRef.set({ storeId: storeId, timestamp: Date.now() }).then(function() {
-          console.log('Presence set:', storeId);
+        myPresenceRef.set({ storeId: storeId, timestamp: Date.now(), sid: sessionId }).then(function() {
+          console.log('Presence SET ok:', storeId);
         }).catch(function(err) {
-          console.log('Presence write failed:', err.message);
+          console.log('Presence SET failed:', err.message);
+          updatePresenceDebug('⚠️ Write failed: ' + err.message);
         });
       } else {
         myPresenceRef.remove().catch(function(err) {
-          console.log('Presence clear failed:', err.message);
+          console.log('Presence CLEAR failed:', err.message);
         });
       }
     }
@@ -314,7 +316,7 @@
     function startPresenceListener() {
       presenceRef.on('value', function(snap) {
         activePresence = snap.val() || {};
-        console.log('Presence update:', JSON.stringify(activePresence));
+        console.log('Presence data:', JSON.stringify(activePresence));
         cleanStalePresence();
         renderActivityFeed();
         // Also refresh stores grid if visible
@@ -322,8 +324,14 @@
           renderStoresGrid();
         }
       }, function(err) {
-        console.log('Presence listener error:', err.message);
+        console.log('Presence LISTEN failed:', err.message);
+        updatePresenceDebug('⚠️ Listen failed: ' + err.message);
       });
+    }
+    
+    function updatePresenceDebug(msg) {
+      var el = document.getElementById('presence-debug');
+      if (el) el.textContent = msg;
     }
     
     function renderActivityFeed() {
@@ -333,10 +341,12 @@
       // Build a map of store → { selfHere, othersCount }
       var storeMap = {};
       var cutoff = Date.now() - (2 * 60 * 60 * 1000);
+      var totalSessions = 0;
       Object.keys(activePresence).forEach(function(sid) {
         var entry = activePresence[sid];
         if (!entry || !entry.storeId) return;
         if (entry.timestamp && entry.timestamp < cutoff) return;
+        totalSessions++;
         var key = entry.storeId;
         if (!storeMap[key]) storeMap[key] = { selfHere: false, othersCount: 0 };
         if (sid === sessionId) {
@@ -345,6 +355,9 @@
           storeMap[key].othersCount++;
         }
       });
+      
+      // Update debug line
+      updatePresenceDebug('Sessions: ' + totalSessions + ' | My ID: ' + sessionId.slice(-6));
       
       var storeIds = Object.keys(storeMap);
       if (storeIds.length === 0) {
@@ -357,7 +370,6 @@
         var store = STORES.find(function(s) { return s.id === storeId; });
         if (!store) return;
         var info = storeMap[storeId];
-        // Build the label
         var parts = [];
         if (info.selfHere) parts.push('You');
         if (info.othersCount === 1) parts.push('someone else');
@@ -800,6 +812,7 @@
         document.getElementById('stores-screen').classList.remove('fade-out');
         document.getElementById('welcome-screen').classList.remove('hidden');
         document.getElementById('welcome-screen').classList.remove('fade-out');
+        renderActivityFeed();
       }, 300);
     }
     

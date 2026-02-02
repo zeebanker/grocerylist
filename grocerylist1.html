@@ -1313,12 +1313,12 @@
       }
     }
     
-    // Long-press welcome image to wipe history
+    // Long-press welcome image to export purchase history CSV
     var welcomeImgTimer = null;
     function welcomeImgLpStart() {
       welcomeImgTimer = setTimeout(function() {
         welcomeImgTimer = null;
-        wipeHistory();
+        exportHistory();
       }, 800);
     }
     function welcomeImgLpEnd() {
@@ -1328,13 +1328,85 @@
       if (welcomeImgTimer) { clearTimeout(welcomeImgTimer); welcomeImgTimer = null; }
     }
     
-    function wipeHistory() {
-      if (confirm('Wipe all purchase history? This cannot be undone.')) {
-        purchaseHistory = {};
-        localStorage.removeItem('groceryPurchaseHistory');
-        savePurchaseHistory();
-        alert('Purchase history wiped.');
+    function exportHistory() {
+      // Build a store ID → display name map
+      var storeNames = {};
+      STORES.forEach(function(s) { storeNames[s.id] = s.name; });
+      
+      // Collect all unique dates across every store
+      var allDatesSet = {};
+      Object.keys(purchaseHistory).forEach(function(storeId) {
+        var storeHist = purchaseHistory[storeId];
+        Object.keys(storeHist).forEach(function(key) {
+          var entry = storeHist[key];
+          if (entry.dates) {
+            entry.dates.forEach(function(d) { allDatesSet[d] = true; });
+          }
+        });
+      });
+      var allDates = Object.keys(allDatesSet).sort();
+      
+      if (allDates.length === 0) {
+        alert('No purchase history to export.');
+        return;
       }
+      
+      // CSV helper — wrap value in quotes if it contains commas or quotes
+      function csvVal(v) {
+        var s = String(v);
+        if (s.indexOf(',') !== -1 || s.indexOf('"') !== -1 || s.indexOf('\n') !== -1) {
+          return '"' + s.replace(/"/g, '""') + '"';
+        }
+        return s;
+      }
+      
+      // Header row: Store, Item, Total, then each date
+      var lines = [];
+      var header = ['Store', 'Item', 'Total'];
+      allDates.forEach(function(d) { header.push(d); });
+      lines.push(header.map(csvVal).join(','));
+      
+      // One row per store+item combination, sorted by store then total desc
+      STORES.forEach(function(store) {
+        var storeHist = purchaseHistory[store.id];
+        if (!storeHist) return;
+        
+        var rows = [];
+        Object.keys(storeHist).forEach(function(key) {
+          var entry = storeHist[key];
+          // Count per date for this item
+          var dateCounts = {};
+          if (entry.dates) {
+            entry.dates.forEach(function(d) {
+              dateCounts[d] = (dateCounts[d] || 0) + 1;
+            });
+          }
+          var displayName = key.charAt(0).toUpperCase() + key.slice(1);
+          rows.push({ name: displayName, total: entry.count || 0, dateCounts: dateCounts });
+        });
+        
+        // Sort by total purchases descending
+        rows.sort(function(a, b) { return b.total - a.total; });
+        
+        rows.forEach(function(row) {
+          var line = [store.name, row.name, row.total];
+          allDates.forEach(function(d) {
+            line.push(row.dateCounts[d] || 0);
+          });
+          lines.push(line.map(csvVal).join(','));
+        });
+      });
+      
+      var csv = lines.join('\n');
+      var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      var today = new Date().toISOString().split('T')[0];
+      a.download = 'grocery-history-' + today + '.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
     }
     
     // Register service worker for PWA

@@ -364,9 +364,6 @@
       return Math.floor(diff / 3600) + 'h ago';
     }
     
-    // Start listening immediately
-    startPresenceListener();
-    
     // Clean up on page unload
     window.addEventListener('beforeunload', function() {
       myPresenceRef.remove();
@@ -990,6 +987,9 @@
       d.textContent = text; 
       return d.innerHTML; 
     }
+    
+    // Start presence listener now that STORES and escapeHtml are available
+    startPresenceListener();
     
     // Long-press to edit item name
     var lpTimers = {};

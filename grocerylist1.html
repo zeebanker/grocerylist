@@ -299,19 +299,22 @@
     }
     
     function setMyPresence(storeId) {
+      var data = { timestamp: Date.now(), sid: sessionId };
       if (storeId) {
-        myPresenceRef.set({ storeId: storeId, timestamp: Date.now(), sid: sessionId }).then(function() {
-          console.log('Presence SET ok:', storeId);
-        }).catch(function(err) {
-          console.log('Presence SET failed:', err.message);
-          updatePresenceDebug('⚠️ Write failed: ' + err.message);
-        });
+        data.storeId = storeId;
       } else {
-        myPresenceRef.remove().catch(function(err) {
-          console.log('Presence CLEAR failed:', err.message);
-        });
+        data.status = 'browsing';
       }
+      myPresenceRef.set(data).then(function() {
+        console.log('Presence SET ok:', storeId || 'browsing');
+      }).catch(function(err) {
+        console.log('Presence SET failed:', err.message);
+        updatePresenceDebug('⚠️ Write failed: ' + err.message);
+      });
     }
+    
+    // Register presence immediately on load
+    setMyPresence(null);
     
     function startPresenceListener() {
       presenceRef.on('value', function(snap) {
@@ -338,52 +341,52 @@
       var feed = document.getElementById('activity-feed');
       if (!feed) return;
       
-      // Build a map of store → { selfHere, othersCount }
-      var storeMap = {};
       var cutoff = Date.now() - (2 * 60 * 60 * 1000);
+      var storeMap = {};
+      var browsingCount = 0;
       var totalSessions = 0;
+      
       Object.keys(activePresence).forEach(function(sid) {
         var entry = activePresence[sid];
-        if (!entry || !entry.storeId) return;
-        if (entry.timestamp && entry.timestamp < cutoff) return;
+        if (!entry || !entry.timestamp || entry.timestamp < cutoff) return;
         totalSessions++;
-        var key = entry.storeId;
-        if (!storeMap[key]) storeMap[key] = { selfHere: false, othersCount: 0 };
-        if (sid === sessionId) {
-          storeMap[key].selfHere = true;
+        if (sid === sessionId) return; // skip self for the pills
+        
+        if (entry.storeId) {
+          var key = entry.storeId;
+          if (!storeMap[key]) storeMap[key] = 0;
+          storeMap[key]++;
         } else {
-          storeMap[key].othersCount++;
+          browsingCount++;
         }
       });
       
       // Update debug line
       updatePresenceDebug('Sessions: ' + totalSessions + ' | My ID: ' + sessionId.slice(-6));
       
-      var storeIds = Object.keys(storeMap);
-      if (storeIds.length === 0) {
-        feed.innerHTML = '';
-        return;
-      }
-      
       var html = '';
-      storeIds.forEach(function(storeId) {
+      
+      // Show store-specific pills
+      Object.keys(storeMap).forEach(function(storeId) {
         var store = STORES.find(function(s) { return s.id === storeId; });
         if (!store) return;
-        var info = storeMap[storeId];
-        var parts = [];
-        if (info.selfHere) parts.push('You');
-        if (info.othersCount === 1) parts.push('someone else');
-        else if (info.othersCount > 1) parts.push(info.othersCount + ' others');
-        var who = parts.join(' & ');
-        var verb = (parts.length === 1 && parts[0] === 'You') ? 'are' :
-                   (parts.length === 1 && info.othersCount === 1) ? 'is' : 'are';
-        
+        var n = storeMap[storeId];
+        var who = n === 1 ? 'Someone is' : n + ' people are';
         html += '<div class="activity-pill">';
         html += '<span class="activity-pill-dot" style="background: ' + store.color + ';"></span>';
         html += '<img class="activity-pill-logo" src="' + store.image + '" alt="">';
-        html += '<span class="activity-pill-text">' + who + ' ' + verb + ' shopping at ' + escapeHtml(store.name) + '</span>';
+        html += '<span class="activity-pill-text">' + who + ' shopping at ' + escapeHtml(store.name) + '</span>';
         html += '</div>';
       });
+      
+      // Show browsing pill
+      if (browsingCount > 0) {
+        var browseWho = browsingCount === 1 ? 'Someone else is' : browsingCount + ' others are';
+        html += '<div class="activity-pill">';
+        html += '<span class="activity-pill-dot" style="background: #81c784;"></span>';
+        html += '<span class="activity-pill-text">👋 ' + browseWho + ' also online</span>';
+        html += '</div>';
+      }
       
       feed.innerHTML = html;
     }

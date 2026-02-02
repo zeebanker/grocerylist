@@ -278,17 +278,20 @@
     var sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
     var presenceRef = db.ref('households/karkart-family/presence');
     var myPresenceRef = presenceRef.child(sessionId);
-    var activePresence = {}; // tracks other sessions: { sessionId: { storeId, timestamp } }
+    var activePresence = {};
     
     // Auto-remove on disconnect
-    myPresenceRef.onDisconnect().remove();
+    myPresenceRef.onDisconnect().remove().catch(function(e) {
+      console.log('onDisconnect setup failed:', e.message);
+    });
     
     // Clean up stale presence entries older than 2 hours
     function cleanStalePresence() {
       var cutoff = Date.now() - (2 * 60 * 60 * 1000);
       Object.keys(activePresence).forEach(function(sid) {
-        if (activePresence[sid].timestamp < cutoff) {
-          presenceRef.child(sid).remove();
+        var entry = activePresence[sid];
+        if (entry && entry.timestamp && entry.timestamp < cutoff) {
+          presenceRef.child(sid).remove().catch(function() {});
         }
       });
     }
@@ -296,21 +299,30 @@
     function setMyPresence(storeId) {
       if (!fbReady) return;
       if (storeId) {
-        myPresenceRef.set({ storeId: storeId, timestamp: Date.now() });
+        myPresenceRef.set({ storeId: storeId, timestamp: Date.now() }).then(function() {
+          console.log('Presence set:', storeId);
+        }).catch(function(err) {
+          console.log('Presence write failed:', err.message);
+        });
       } else {
-        myPresenceRef.remove();
+        myPresenceRef.remove().catch(function(err) {
+          console.log('Presence clear failed:', err.message);
+        });
       }
     }
     
     function startPresenceListener() {
       presenceRef.on('value', function(snap) {
         activePresence = snap.val() || {};
+        console.log('Presence update:', JSON.stringify(activePresence));
         cleanStalePresence();
         renderActivityFeed();
         // Also refresh stores grid if visible
         if (!document.getElementById('stores-screen').classList.contains('hidden')) {
           renderStoresGrid();
         }
+      }, function(err) {
+        console.log('Presence listener error:', err.message);
       });
     }
     
@@ -318,18 +330,19 @@
       var feed = document.getElementById('activity-feed');
       if (!feed) return;
       
-      // Build a map of store → count of OTHER active sessions
+      // Build a map of store → { selfHere, othersCount }
       var storeMap = {};
+      var cutoff = Date.now() - (2 * 60 * 60 * 1000);
       Object.keys(activePresence).forEach(function(sid) {
-        if (sid === sessionId) return; // skip self
         var entry = activePresence[sid];
         if (!entry || !entry.storeId) return;
-        // Skip entries older than 2 hours
-        if (entry.timestamp && (Date.now() - entry.timestamp) > 2 * 60 * 60 * 1000) return;
-        if (!storeMap[entry.storeId]) storeMap[entry.storeId] = { count: 0, latest: 0 };
-        storeMap[entry.storeId].count++;
-        if (entry.timestamp > storeMap[entry.storeId].latest) {
-          storeMap[entry.storeId].latest = entry.timestamp;
+        if (entry.timestamp && entry.timestamp < cutoff) return;
+        var key = entry.storeId;
+        if (!storeMap[key]) storeMap[key] = { selfHere: false, othersCount: 0 };
+        if (sid === sessionId) {
+          storeMap[key].selfHere = true;
+        } else {
+          storeMap[key].othersCount++;
         }
       });
       
@@ -344,12 +357,19 @@
         var store = STORES.find(function(s) { return s.id === storeId; });
         if (!store) return;
         var info = storeMap[storeId];
-        var who = info.count === 1 ? 'Someone is' : info.count + ' people are';
-        var ago = formatTimeAgo(info.latest);
+        // Build the label
+        var parts = [];
+        if (info.selfHere) parts.push('You');
+        if (info.othersCount === 1) parts.push('someone else');
+        else if (info.othersCount > 1) parts.push(info.othersCount + ' others');
+        var who = parts.join(' & ');
+        var verb = (parts.length === 1 && parts[0] === 'You') ? 'are' :
+                   (parts.length === 1 && info.othersCount === 1) ? 'is' : 'are';
+        
         html += '<div class="activity-pill">';
         html += '<span class="activity-pill-dot" style="background: ' + store.color + ';"></span>';
         html += '<img class="activity-pill-logo" src="' + store.image + '" alt="">';
-        html += '<span class="activity-pill-text">' + who + ' shopping at ' + escapeHtml(store.name) + '</span>';
+        html += '<span class="activity-pill-text">' + who + ' ' + verb + ' shopping at ' + escapeHtml(store.name) + '</span>';
         html += '</div>';
       });
       
@@ -787,9 +807,8 @@
       var count = 0;
       var cutoff = Date.now() - (2 * 60 * 60 * 1000);
       Object.keys(activePresence).forEach(function(sid) {
-        if (sid === sessionId) return;
         var entry = activePresence[sid];
-        if (entry && entry.storeId === storeId && entry.timestamp > cutoff) count++;
+        if (entry && entry.storeId === storeId && entry.timestamp && entry.timestamp > cutoff) count++;
       });
       return count;
     }

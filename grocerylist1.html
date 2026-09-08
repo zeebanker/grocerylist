@@ -13,6 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <style>
     :root {
       --bg1: #f0f7f4; --bg2: #e8f5e9; --bg3: #fff8e1;
@@ -281,9 +282,42 @@
     firebase.initializeApp(firebaseConfig);
     var db = firebase.database();
     var fbRef = db.ref('households/karkart-family');
-    var fbReady = true;
+    // fbReady stays false until anonymous sign-in succeeds. syncToCloud() already
+    // checks it, so nothing is written to the cloud before we are signed in.
+    var fbReady = false;
     var fbIgnoreNext = false;
     var localDirty = false;
+
+    // ---- Anonymous sign-in ---------------------------------------------------
+    // No login screen and nothing for anyone to remember: Firebase issues the
+    // device a token by itself. The point is the security rules, which require
+    // auth != null, so the database is no longer readable or writable by an
+    // anonymous stranger with the URL. Every device still shares the one
+    // households/karkart-family path, so this does NOT split data per phone the
+    // way the old uid-keyed setup did.
+    var fbAuthed = false;
+    var fbAuthQueue = [];
+
+    function whenAuthed(fn) {
+      if (fbAuthed) { fn(); return; }
+      fbAuthQueue.push(fn);
+    }
+
+    firebase.auth().signInAnonymously().then(function() {
+      fbAuthed = true;
+      fbReady = true;
+      var queued = fbAuthQueue;
+      fbAuthQueue = [];
+      queued.forEach(function(fn) {
+        try { fn(); } catch (e) { console.log('post-auth task failed:', e.message); }
+      });
+    }).catch(function(err) {
+      // Sign-in failed (offline, or Anonymous sign-in switched off in the
+      // Firebase console). The app keeps working entirely from localStorage;
+      // only cloud sync is unavailable, and the badge says so.
+      console.log('Anonymous sign-in failed:', err.message);
+      if (typeof updateSyncStatus === 'function') updateSyncStatus(null, false, true);
+    });
     
     // --- Presence system ---
     // Use a SEPARATE top-level path so presence writes don't trigger the data sync listener on fbRef
@@ -293,8 +327,10 @@
     var activePresence = {};
     
     // Auto-remove on disconnect
-    myPresenceRef.onDisconnect().remove().catch(function(e) {
-      console.log('onDisconnect setup failed:', e.message);
+    whenAuthed(function() {
+      myPresenceRef.onDisconnect().remove().catch(function(e) {
+        console.log('onDisconnect setup failed:', e.message);
+      });
     });
     
     // Clean up stale presence entries older than 2 hours
@@ -320,8 +356,8 @@
       });
     }
     
-    // Register presence immediately on load
-    setMyPresence(null);
+    // Register presence as soon as we are signed in
+    whenAuthed(function() { setMyPresence(null); });
     
     function startPresenceListener() {
       presenceRef.on('value', function(snap) {
@@ -428,7 +464,8 @@
       myPresenceRef.remove();
     });
     
-    // Initial load from cloud
+    // Initial load from cloud, once signed in
+    whenAuthed(function() {
     fbRef.once('value').then(function(snap) {
       var cloud = snap.val();
       if (cloud) {
@@ -442,6 +479,7 @@
       console.log('Firebase initial load error:', err.message);
       updateSyncStatus(null, false, true);
       startRealtimeSync();
+    });
     });
     
     function applyCloudData(cloud) {
@@ -1184,7 +1222,7 @@
     }
     
     // Start presence listener now that STORES and escapeHtml are available
-    startPresenceListener();
+    whenAuthed(function() { startPresenceListener(); });
     
     // Long-press to edit item name
     var lpTimers = {};

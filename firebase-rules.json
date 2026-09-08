@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "households": {
+      "karkart-family": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "presence": {
+      "karkart-family": {
+        ".read": true,
+        ".write": true
+      }
+    }
+  }
+}

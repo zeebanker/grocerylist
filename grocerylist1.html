@@ -297,7 +297,6 @@
       <div id="kk-sug" class="kk-sug" style="display:none"></div>
     </div>
     <button class="kk-browse" onclick="openBrowse()"><span>Browse all items</span><span class="kk-chev">&rsaquo;</span></button>
-    <div id="search-match-count" class="search-match-count" style="display:none;"></div>
     <div id="items-list" class="items-list"></div>
   </div>
   <div id="history-overlay" class="history-overlay hidden" onclick="closeHistoryOverlay(event)">
@@ -492,6 +491,8 @@
       if (cloud.items) {
         var cloudItems = JSON.parse(cloud.items);
         items = cloudItems;
+        var pruned = pruneInactive();
+        if (pruned) { console.log('pruned ' + pruned + ' catalogue-only rows from the cloud copy'); }
         localStorage.setItem('groceryListByStore', JSON.stringify(items));
         changed = true;
       }
@@ -987,7 +988,7 @@
     // Anything not on the list is reachable through search or Browse all items.
     ['kowalskis','target','costco','indian'].forEach(function(st) { if (!items[st]) items[st] = []; });
     localStorage.setItem('groceryListByStore', JSON.stringify(items));
-    migrateToActiveOnly();
+    pruneInactive();
     clearBoughtIfNewDay();
     
     document.getElementById('bg-img').src = IMAGES.brain;
@@ -1052,13 +1053,7 @@
     function selectStore(storeId) {
       currentStore = STORES.find(function(s) { return s.id === storeId; });
       setMyPresence(storeId);
-      searchFilter = '';
-      var searchInput = document.getElementById('search-input');
-      if (searchInput) { searchInput.value = ''; }
-      var searchClear = document.getElementById('search-clear');
-      if (searchClear) { searchClear.classList.remove('visible'); }
-      var matchCount = document.getElementById('search-match-count');
-      if (matchCount) { matchCount.style.display = 'none'; }
+      resetSearchBox();
       document.getElementById('stores-screen').classList.add('fade-out');
       setTimeout(function() {
         document.getElementById('stores-screen').classList.add('hidden');
@@ -1078,7 +1073,7 @@
     
     function backToStores() {
       setMyPresence(null);
-      clearSearch();
+      resetSearchBox();
       document.getElementById('list-screen').classList.add('fade-out');
       setTimeout(function() {
         document.getElementById('list-screen').classList.add('hidden');
@@ -1295,21 +1290,21 @@
       if (changed) saveItems();
     }
 
-    // ---- One-time migration: the list stops being the catalogue.
-    function migrateToActiveOnly() {
-      if (localStorage.getItem('groceryModelV2')) return;
-      var moved = 0;
+    // ---- The list holds only active rows. A row with no quantity that is not
+    // ticked has no meaning under this model, so prune whenever items are set.
+    // Idempotent on purpose: a one-time flag was wrong, because the cloud load
+    // is async and replaced the migrated list with the un-migrated one.
+    function pruneInactive() {
+      var dropped = 0;
       Object.keys(items).forEach(function(st) {
-        var keep = [];
-        items[st].forEach(function(r) {
-          var hasQty = r.quantity && r.quantity.trim() !== '';
-          if (hasQty || r.checked) keep.push(r); else moved++;
+        if (!Array.isArray(items[st])) { items[st] = []; return; }
+        var keep = items[st].filter(function(r) {
+          return (r.quantity && r.quantity.trim() !== '') || r.checked;
         });
+        dropped += items[st].length - keep.length;
         items[st] = keep;
       });
-      localStorage.setItem('groceryModelV2', '1');
-      console.log('Model v2 migration: ' + moved + ' catalogue-only rows moved out of the list');
-      saveItems();
+      return dropped;
     }
 
     // ================= RENDER =================
@@ -1414,6 +1409,13 @@
       var n = getPurchaseCount(currentStore.id, r.text);
       el.textContent = n === 0 ? 'Never purchased' : 'Purchased ' + n + ' time' + (n !== 1 ? 's' : '');
       el.classList.add('show');
+    }
+
+    function resetSearchBox() {
+      var el = document.getElementById('item-input');
+      if (el) el.value = '';
+      var sug = document.getElementById('kk-sug');
+      if (sug) sug.style.display = 'none';
     }
 
     // ================= SEARCH =================

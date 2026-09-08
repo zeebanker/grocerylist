@@ -77,6 +77,52 @@
     .in-store-banner-dot { width: 7px; height: 7px; border-radius: 50%; animation: pulse 1.8s ease-in-out infinite; flex-shrink: 0; }
     .in-store-banner-text { flex: 1; }
     /* Undo / hint toast — dark ground so text always reads on the light app background */
+    .kk-searchwrap{position:relative}
+    .kk-mag{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:16px;height:16px;fill:var(--text-muted);pointer-events:none;z-index:2}
+    .kk-find{padding-left:38px !important}
+    .kk-sug{position:absolute;left:0;right:0;top:calc(100% + 6px);background:#fff;border-radius:14px;z-index:60;box-shadow:0 10px 28px rgba(0,0,0,.2);overflow:hidden;max-height:320px;overflow-y:auto}
+    .kk-sh{padding:7px 13px;font-size:10.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--text-muted);background:#f4f9f5}
+    .kk-sr{padding:9px 11px;display:flex;align-items:center;gap:9px;border-bottom:1px solid #f1f5f2}
+    .kk-sr b{flex:1;font-size:13.5px;font-weight:600;color:var(--text-item)}
+    .kk-at{font-weight:600;font-size:11px;color:var(--text-muted)}
+    .kk-sug mark{background:#d9f0dc;color:var(--store-accent,#2c3e2d);border-radius:3px;padding:0 1px}
+    .kk-sq{width:58px;text-align:center;border:2px solid var(--input-border);border-radius:9px;padding:6px;background:var(--qty-bg);font-family:inherit;font-size:13px;font-weight:700;color:#1a5f2a;outline:none}
+    .kk-add{padding:12px 13px;display:flex;align-items:center;gap:10px;background:#f4f9f5}
+    .kk-addt{flex:1;font-size:13.5px;font-weight:600;color:var(--text-secondary)}
+    .kk-addt b{color:var(--store-accent,#2c3e2d)}
+    .kk-add button{border:none;background:var(--store-accent,#2c3e2d);color:#fff;width:38px;height:34px;border-radius:10px;font-size:19px;font-weight:700;cursor:pointer}
+    .kk-browse{display:flex;align-items:center;gap:5px;background:none;border:none;padding:6px 2px 10px;margin:0;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:var(--store-accent,#2c3e2d)}
+    .kk-chev{font-size:15px;line-height:1}
+    .kk-cat{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;cursor:pointer;padding:10px 4px 6px;text-align:left;font-family:inherit}
+    .kk-pm{width:22px;height:22px;flex-shrink:0;border-radius:7px;background:#e6efe8;color:var(--store-accent,#2c3e2d);font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;line-height:1}
+    .kk-nm{font-family:'Fredoka',sans-serif;font-size:18px;font-weight:600;color:var(--store-accent,#2c3e2d)}
+    .kk-cat.kk-closed .kk-nm{opacity:.75}
+    .kk-body.kk-hidden{display:none}
+    .kk-sub{font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--text-muted);margin:9px 6px 5px}
+    .kk-empty{text-align:center;color:var(--text-muted);font-size:13px;font-weight:600;padding:16px 10px;line-height:1.5}
+    .kk-crow{display:flex;align-items:center;gap:9px;background:var(--row-bg);border-radius:13px;padding:10px 12px;margin-bottom:6px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+    .kk-ct{flex:1;font-size:14px;font-weight:600;color:var(--text-item)}
+    .kk-trash{width:30px;height:30px;flex-shrink:0;border:none;background:none;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;border-radius:8px}
+    .kk-trash svg{width:15px;height:15px;fill:#c0705f}
+    .kk-ovl{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:800;opacity:0;pointer-events:none;transition:opacity .2s}
+    .kk-ovl.on{opacity:1;pointer-events:auto}
+    .kk-sheet{position:fixed;left:0;right:0;bottom:0;height:86%;background:#f4f9f5;border-radius:22px 22px 0 0;z-index:801;transform:translateY(100%);transition:transform .26s ease;display:flex;flex-direction:column}
+    .kk-sheet.on{transform:none}
+    .kk-sheet-hd{display:flex;align-items:center;gap:10px;padding:15px 16px 11px;border-bottom:1px solid #e4ece6}
+    .kk-sheet-hd h3{margin:0;flex:1;font-family:'Fredoka',sans-serif;font-size:17px;font-weight:600;color:var(--store-accent,#2c3e2d)}
+    .kk-sheet-hd button{border:none;background:#e6efe8;color:var(--store-accent,#2c3e2d);width:30px;height:30px;border-radius:9px;font-size:16px;font-weight:700;cursor:pointer}
+    .kk-sheet-body{flex:1;overflow-y:auto;padding:6px 14px 26px}
+    .kk-cfm{position:fixed;inset:0;z-index:900;display:none;align-items:center;justify-content:center;padding:26px;background:rgba(0,0,0,.5)}
+    .kk-cfm.on{display:flex}
+    .kk-cfm-box{background:#fff;border-radius:17px;padding:20px;max-width:300px;box-shadow:0 14px 40px rgba(0,0,0,.3)}
+    .kk-cfm-box h4{margin:0 0 7px;font-family:'Fredoka',sans-serif;font-size:16px;font-weight:600;color:var(--store-accent,#2c3e2d)}
+    .kk-cfm-box p{margin:0 0 16px;font-size:13px;line-height:1.5;color:#4a5b4f}
+    .kk-cfm-btns{display:flex;gap:8px}
+    .kk-cfm-btns button{flex:1;border:none;border-radius:10px;padding:10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer}
+    .kk-cfm-no{background:#eef3ef;color:var(--text-primary)}
+    .kk-cfm-yes{background:#b4503c;color:#fff}
+    .item-freq{display:none}
+    .item-freq.show{display:block}
     .app-toast { position: fixed; left: 12px; right: 12px; bottom: 18px; z-index: 900; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 14px; background: #2d5a3d; color: #ffffff; box-shadow: 0 6px 20px rgba(0,0,0,0.28); font-size: 13.5px; font-weight: 500; animation: pillFadeIn 0.25s ease both; }
     .app-toast-text { flex: 1; line-height: 1.35; }
     .app-toast-btn { flex-shrink: 0; background: #ffffff; color: #2d5a3d; border: none; border-radius: 9px; padding: 8px 15px; font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
@@ -245,15 +291,12 @@
       <div class="header-logo-container" onclick="logoTap()" ontouchstart="logoLpStart()" ontouchend="logoLpEnd()" ontouchcancel="logoLpEnd()" onmousedown="logoLpStart()" onmouseup="logoLpEnd()" onmouseleave="logoLpEnd()"><img id="header-logo" src="" alt="" class="header-logo"></div>
       <p id="item-count" class="subtitle"></p>
     </div>
-    <div class="input-container">
-      <input type="text" id="item-input" class="item-input" placeholder="Add an item..." onkeydown="handleKeyDown(event)">
-      <button id="add-button" class="add-button" onclick="addItem()">+</button>
+    <div class="input-container kk-searchwrap">
+      <svg class="kk-mag" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="text" id="item-input" class="item-input kk-find" placeholder="Find items..." autocomplete="off" oninput="kkSearch()" onkeydown="handleKeyDown(event)">
+      <div id="kk-sug" class="kk-sug" style="display:none"></div>
     </div>
-    <div class="search-container">
-      <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-      <input type="text" id="search-input" class="search-input" placeholder="Filter items..." oninput="onSearchInput()" onkeydown="if(event.key==='Escape'){clearSearch()}">
-      <button id="search-clear" class="search-clear" onclick="clearSearch()">×</button>
-    </div>
+    <button class="kk-browse" onclick="openBrowse()"><span>Browse all items</span><span class="kk-chev">&rsaquo;</span></button>
     <div id="search-match-count" class="search-match-count" style="display:none;"></div>
     <div id="items-list" class="items-list"></div>
   </div>
@@ -464,6 +507,9 @@
         localStorage.setItem('groceryCustomItems', JSON.stringify(customItems));
         changed = true;
       }
+      if (cloud.removedItems) {
+        try { removedItems = JSON.parse(cloud.removedItems); localStorage.setItem('groceryRemovedItems', cloud.removedItems); changed = true; } catch (e) {}
+      }
       if (cloud.itemLocations) {
         var cloudLocs = JSON.parse(cloud.itemLocations);
         itemLocations = cloudLocs;
@@ -502,6 +548,7 @@
         items: JSON.stringify(items),
         purchaseHistory: JSON.stringify(purchaseHistory),
         customItems: JSON.stringify(customItems),
+        removedItems: JSON.stringify(removedItems),
         itemLocations: JSON.stringify(itemLocations),
         lastUpdated: now
       }).then(function() {
@@ -560,15 +607,15 @@
     
     const DEFAULT_ITEMS = [
       'Baby carrots', 'Carrots', 'Lemons', 'Limes', 'Cabbage', 'Cauliflower', 'Oranges', 'Apples',
-      'Green grapes', 'Red grapes', 'Strawberries', 'Raspberries', 'Blueberries', 'Water melon',
+      'Green grapes', 'Red grapes', 'Strawberries', 'Raspberries', 'Blueberries', 'Watermelon',
       'Cilantro', 'Kale', 'Broccoli', 'Garlic', 'Yellow potatoes', 'Yellow onions', 'Red onions',
       'White Onions', 'Bananas', 'Cherry tomatoes', 'Vine ripe tomatoes', 'Roma tomatoes',
       'Large tomatoes', 'Grape Tomatoes', 'Asparagus', 'Green beans', 'Beetroot', 'Brussel sprouts', 'Ginger',
       'Red cabbage', 'Chinese cabbage', 'Baby lettuce', 'Cucumber large', 'Cucumber baby',
       'Green bell peppers', 'Red bell peppers', 'Yellow bell peppers', 'Eggplant', 'Kohlrabi',
-      'Green peas frozen', 'Radish', 'Zucchini', 'Sweet potato', 'Turnip', 'Turnip greens',
+      'Frozen green peas', 'Radish', 'Zucchini', 'Sweet potato', 'Turnip', 'Turnip greens',
       'Yam', 'Jicama', 'Yellow squash', 'Edamame', 'Green chillies', 'Shallots', 'Poblano peppers',
-      'Jalapeno peppers', '2% milk 1 gal',
+      'Jalapeno peppers', '2% milk 1 gallon',
       'Buttermilk', 'Eggs', 'Butter', 'Sour cream', 'Cheese slices', 'Shredded cheese',
       'Cream cheese', 'Parmesan cheese', 'Coffee creamer', 'Fresh mozzarella', 'Whole plain yoghurt',
       'Low fat plain yoghurt', 'Greek yoghurt', 'OJ', 'Ice cream', 'Waffles', 'Cereal'
@@ -576,33 +623,33 @@
     
     const COSTCO_ITEMS = [
       'White eggs', 'Brown eggs', 'Cocktail cucumbers', 'Organic gala Disney apples',
-      'Dragon fruit', 'Autulfo mangoes', 'Persimmons', 'Cherries', 'Dates',
-      'Kirkland basil pesto', 'Kerry Gold, butter salted', 'Kirkland unsalted butter',
+      'Dragon fruit', 'Ataulfo mangoes', 'Persimmons', 'Cherries', 'Dates',
+      'Kirkland basil pesto', 'Kerrygold salted butter', 'Kirkland unsalted butter',
       "Dunkin' Donuts coffee", 'Dahi yogurt', 'Organic cane sugar',
       'Skinny pop popcorn regular', 'Canola oil', 'Kirkland extra-virgin olive oil',
       'Nutella', 'Kirkland Marinara sauce', 'Roti', 'Kirkland paper towels',
-      'Charmin TP', 'Kirkland white clear laundry detergent', 'Finish rinse aid',
+      'Charmin toilet paper', 'Kirkland Free & Clear laundry detergent', 'Finish rinse aid',
       'Finish dishwasher tabs'
     ];
     
     const TARGET_ITEMS = [
       'Pepperidge Farm cinnamon raisin bread', 'Multigrain Cheerios',
-      'Cornflakes Kellogg',
-      'Freeze dried strawberries', 'Mrs.Meyers dish soap', 'Finish rinse aid',
+      "Kellogg's cornflakes",
+      'Freeze dried strawberries', 'Mrs. Meyers dish soap', 'Finish rinse aid',
       'Toothpaste'
     ];
     
     const INDIAN_ITEMS = [
-      'Anapakaaya', 'Beerakaya', 'Banglore vankaya', 'Kakarakaya', 'Small eggplant',
+      'Anapakaaya', 'Beerakaya', 'Bangalore vankaya', 'Kakarakaya', 'Small eggplant',
       'Red pumpkin', 'Cut white pumpkin', 'Bacchala koora', 'Gongura', 'Menthi koora',
-      'Thota koora', 'Radish', 'Dondakaya', 'Chikkudukaya', 'Chama Dumpa',
-      'Aratikaya', 'Potatoes small', 'Coconut', 'Frozen coconut', 'Frozen drumsticks',
+      'Thota koora', 'Radish', 'Dondakaya', 'Chikkudukaya', 'Chama dumpa',
+      'Aratikaya', 'Small potatoes', 'Coconut', 'Frozen coconut', 'Frozen drumsticks',
       'Raw mango', 'Mint leaves', 'Aashivaad whole wheat flour',
-      'Ponni rice zippered pref', 'Plain Urad dal', 'Black urad dal', 'Toor dal',
-      'Moong dal', 'Channa', 'Chole chick peas', 'Rajma', 'Black eyed peas', 'Besan',
+      'Ponni rice', 'Plain urad dal', 'Black urad dal', 'Toor dal',
+      'Moong dal', 'Channa', 'Chole (chickpeas)', 'Rajma', 'Black eyed peas', 'Besan',
       'Rice flour', 'Maida', 'Sooji upma rava', 'Peanuts', 'Raisins', 'Cashews', 'Ghee',
-      'Red chillis', 'Green chillis', 'Tamarind', 'Jaggery', 'Jeera', 'Tiny mustard seeds',
-      'Cloves', 'Fennel seeds', 'Ajwain (vaamu)', 'Asofetida', 'Maggi noodles',
+      'Red chillies', 'Green chillies', 'Tamarind', 'Jaggery', 'Jeera', 'Tiny mustard seeds',
+      'Cloves', 'Fennel seeds', 'Ajwain (vaamu)', 'Asafoetida', 'Maggi noodles',
       'Deep Mysore murumura'
     ];
     
@@ -664,6 +711,165 @@
       indian: INDIAN_ITEMS
     };
     
+    // ================= STARTER CATALOGUE =================
+    // Searchable stock per store, on top of STORE_DEFAULTS and your custom items.
+    // These never appear on the list until you give one a quantity.
+    // Scoped to how the stores are actually used: food at Kowalski's,
+    // household and personal care at Target, bulk at Costco, specialty at Indian.
+    var CATALOGUE = {
+      kowalskis: [
+        'Chicken breast','Chicken thighs','Whole chicken','Ground beef','Beef steak','Pork chops',
+        'Bacon','Ham','Sausages','Turkey slices','Salami','Pepperoni','Ground turkey',
+        'Salmon fillet','Tilapia','Cod fillet','Shrimp','Canned tuna','Smoked salmon',
+        'Tofu','Hummus','Guacamole',
+        'Sourdough loaf','Baguette','Bagels','English muffins','Hamburger buns','Hot dog buns',
+        'Pita bread','Flour tortillas','Croissants','Dinner rolls',
+        'Ketchup','Mustard','Mayonnaise','BBQ sauce','Soy sauce','Hot sauce','Ranch dressing',
+        'Italian dressing','Balsamic vinegar','Olive oil','Vegetable oil','Honey','Maple syrup',
+        'Peanut butter','Jam','Pickles','Olives','Capers',
+        'Pasta','Spaghetti','Penne','Egg noodles','White rice','Brown rice','Quinoa','Couscous',
+        'Canned tomatoes','Tomato paste','Pasta sauce','Chicken stock','Vegetable stock',
+        'Canned black beans','Canned chickpeas','Lentils','Oatmeal','Granola','Pancake mix',
+        'All purpose flour','Sugar','Brown sugar','Baking powder','Baking soda','Vanilla extract',
+        'Chocolate chips','Cocoa powder','Yeast','Cornstarch',
+        'Black pepper','Paprika','Cumin','Chilli powder','Oregano','Basil dried','Cinnamon',
+        'Bay leaves','Garlic powder','Onion powder','Red pepper flakes',
+        'Orange juice','Apple juice','Sparkling water','Lemonade','Iced tea','Ground coffee',
+        'Tea bags','Hot chocolate',
+        'Frozen pizza','Frozen berries','Frozen broccoli','Frozen spinach','Frozen fries',
+        'Tortilla chips','Salsa','Popcorn','Crackers','Granola bars','Trail mix','Dark chocolate',
+        'Paper towels','Toilet paper','Dish soap','Sponges','Bin bags','Aluminium foil',
+        'Cling film','Parchment paper','Laundry detergent','All purpose cleaner'
+      ],
+      target: [
+        'Toothbrush','Toothpaste','Floss','Mouthwash','Deodorant','Razors','Shaving cream',
+        'Shampoo','Conditioner','Body wash','Bar soap','Hand soap','Body lotion','Face wash',
+        'Sunscreen','Lip balm','Cotton buds','Cotton pads','Nail clippers','Hairbrush',
+        'Hair ties','Tissues','Wet wipes','Hand sanitiser',
+        'Paracetamol','Ibuprofen','Plasters','Antiseptic cream','Cough drops','Vitamins',
+        'Paper towels','Toilet paper','Bin bags','Dish soap','Dishwasher tablets',
+        'Laundry detergent','Fabric softener','Stain remover','Bleach','Glass cleaner',
+        'Bathroom cleaner','Floor cleaner','Sponges','Scrubbing brush','Rubber gloves',
+        'Aluminium foil','Cling film','Sandwich bags','Freezer bags','Batteries','Light bulbs',
+        'Greeting card','Wrapping paper','Gift bag','Notebook','Pens','Pencils','Sticky notes',
+        'Printer paper','Envelopes','Tape','Glue sticks',
+        'Frozen pizza','Ice cream','Frozen waffles','Frozen fries','Chicken nuggets',
+        'Crisps','Pretzels','Popcorn','Granola bars','Cereal bars','Biscuits','Chocolate bars'
+      ],
+      costco: [
+        'Rotisserie chicken','Chicken breast bulk','Ground beef bulk','Bacon bulk','Salmon fillet',
+        'Frozen shrimp','Eggs 24 pack','Greek yogurt tub','Cheese block','Shredded cheese bulk',
+        'Butter bulk','Milk 2 pack','Almond milk','Orange juice 2 pack',
+        'Mixed nuts','Almonds','Cashews','Walnuts','Trail mix','Dried mango','Raisins bulk',
+        'Protein bars','Granola bars bulk','Crackers bulk','Tortilla chips bulk','Popcorn bulk',
+        'Olive oil large','Rice bulk','Pasta bulk','Quinoa bulk','Flour bulk','Sugar bulk',
+        'Canned tomatoes bulk','Peanut butter large','Honey large','Maple syrup large',
+        'Coffee beans bulk','Tea bags bulk','Sparkling water case','Bottled water case',
+        'Paper towels bulk','Toilet paper bulk','Bin bags bulk','Laundry detergent bulk',
+        'Dishwasher tablets bulk','Kitchen roll','Batteries bulk','Ziploc bags bulk',
+        'Frozen berries bulk','Frozen vegetables bulk','Frozen pizza bulk'
+      ],
+      indian: [
+        'Basmati rice','Idli rice','Poha','Vermicelli','Chapati flour','Ragi flour','Bajra flour',
+        'Masoor dal','Chana dal','Urad dal split','Moth beans','Kabuli chana',
+        'Turmeric powder','Coriander powder','Garam masala','Sambar powder','Rasam powder',
+        'Chilli powder','Kasuri methi','Cardamom','Star anise','Cinnamon sticks','Black pepper',
+        'Curry leaves','Coriander leaves','Tamarind paste','Coconut oil','Mustard oil','Sesame oil',
+        'Paneer','Curd','Buttermilk packet','Lassi',
+        'Papad','Pickle mango','Pickle lime','Chutney powder','Rasam paste','Sambar paste',
+        'Frozen paratha','Frozen samosa','Frozen dosa batter','Idli batter',
+        'Sev','Bhujia','Mixture','Gulab jamun mix','Rasgulla','Soan papdi','Kaju katli'
+      ]
+    };
+
+    // ================= AUTO CATEGORISER =================
+    // Runs on the phone. No server, no API key, works offline.
+    // Order matters: the first rule that matches wins, so specific beats general.
+    var CAT_RULES = [
+      ['Pantry','Cereal',['cereal','cheerios','cornflakes','cocoa puffs','granola','oatmeal','muesli','poha','murumura']],
+      ['Frozen','Frozen',['frozen','ice cream','icecream','sorbet','gelato','popsicle','waffle']],
+      ['Bakery','',['tortilla wrap','flour tortilla','corn tortillas','sourdough','baguette','bagel',
+        'english muffin','hamburger bun','hot dog bun','dinner roll','croissant','pita','naan',
+        'chapati','paratha','bread','challah','pulla','loaf','muffin']],
+      ['Snacks','',['tortilla chip','corn chip','crisps','chips','pretzel','popcorn','cracker',
+        'takis','cheetos','trail mix','granola bar','cereal bar','biscuit','chocolate bar',
+        'dark chocolate','sev','bhujia','mixture','papad','protein bar']],
+      ['Vegetables','Tomatoes',['grape tomato','cherry tomato','vine ripe tomato','roma tomato','tomato']],
+      ['Vegetables','Peppers and chillies',['bell pepper','poblano','jalapeno','serrano','chilli','chili','pepper flakes']],
+      ['Vegetables','Leafy greens',['lettuce','spinach','kale','chard','koora','greens']],
+      ['Vegetables','Roots and tubers',['carrot','potato','beet','radish','turnip','yam','jicama','dumpa']],
+      ['Vegetables','Onions and alliums',['onion','shallot','garlic','leek']],
+      ['Vegetables','Mushrooms',['mushroom']],
+      ['Vegetables','Beans and pods',['green bean','edamame','pea','okra']],
+      ['Vegetables','',['eggplant','cabbage','broccoli','cauliflower','sprout','kohlrabi','cucumber',
+        'squash','zucchini','asparagus','celery','sweet corn','avocado','gourd','pumpkin','vankaya',
+        'kaya','guacamole','hummus']],
+      ['Pantry','',['stock','broth','bouillon']],
+      ['Meat and fish','Fish and seafood',['salmon','tuna','shrimp','prawn','cod','tilapia','fish']],
+      ['Meat and fish','',['chicken','beef','pork','ham','bacon','turkey','sausage','salami',
+        'pepperoni','steak','mince','lamb','rotisserie']],
+      ['Dairy and eggs','Milk',['milk']],
+      ['Dairy and eggs','Cheese',['cheese','mozzarella','parmesan','asiago','paneer','cheddar']],
+      ['Dairy and eggs','Yoghurt',['yogurt','yoghurt','curd','dahi','lassi']],
+      ['Dairy and eggs','',['butter','cream','egg','tofu']],
+      ['Drinks','',['orange juice','apple juice','juice','sparkling water','bottled water',
+        'lemonade','iced tea','tea bag','coffee','hot chocolate','soda','cola','dr pepper','slurpee',' oj ']],
+      ['Fruit','Berries',['strawberr','raspberr','blueberr','blackberr','berries']],
+      ['Fruit','Citrus',['lemon','lime','orange','mandarin','clementine']],
+      ['Fruit','',['apple','banana','grape','melon','mango','peach','pear','plum','kiwi','pineapple',
+        'apricot','fig','persimmon','dragon fruit','jackfruit','pomegranate','cherries','date','raisin']],
+      ['Herbs and aromatics','',['cilantro','chive','ginger','mint','basil','parsley','thyme',
+        'rosemary','curry leaves','coriander leaves','dill','kasuri methi']],
+      ['Condiments and spices','Spices',['turmeric','coriander powder','garam masala','sambar',
+        'rasam','paprika','cumin','jeera','cinnamon','cardamom','clove','fennel','mustard seed',
+        'ajwain','asafoetida','bay leaf','bay leaves','oregano','black pepper','garlic powder','onion powder',
+        'chilli powder','star anise','masala','spice']],
+      ['Condiments and spices','',['ketchup','mustard','mayonnaise','bbq sauce','soy sauce',
+        'hot sauce','dressing','vinegar','pickle','olive','caper','salsa','chutney','jam',
+        'marmalade','honey','maple syrup','peanut butter','nutella','tamarind','sauce','paste']],
+      ['Baking','',['flour','sugar','baking powder','baking soda','vanilla','chocolate chip',
+        'cocoa','yeast','cornstarch','pancake mix','jaggery','besan','maida','rava','gulab jamun',
+        'soan papdi','kaju katli','rasgulla']],
+      ['Household','',['paper towel','toilet paper','kitchen roll','bin bag','trash bag','foil',
+        'cling film','parchment','sandwich bag','freezer bag','ziploc','detergent','fabric softener',
+        'stain remover','bleach','glass cleaner','bathroom cleaner','floor cleaner','all purpose cleaner',
+        'dish soap','dishwasher','sponge','scrubbing','rubber glove','battery','batteries',
+        'light bulb','toilet cleaner']],
+      ['Personal care','',['toothbrush','toothpaste','floss','mouthwash','deodorant','razor',
+        'shaving','shampoo','conditioner','body wash','bar soap','hand soap','lotion','face wash',
+        'sunscreen','lip balm','cotton bud','cotton pad','nail clipper','hairbrush','hair tie',
+        'tissue','wet wipe','sanitiser','moisturizer','olay','aquaphor','nail polish','ointment']],
+      ['Medicine','',['paracetamol','ibuprofen','plaster','antiseptic','cough drop','vitamin',
+        'hydrocortisone']],
+      ['Stationery and gifts','',['card','wrapping paper','gift bag','notebook','pen','pencil',
+        'sticky note','printer paper','envelope','tape','glue','index card','scribbles']],
+      ['Pantry','Rice and grains',['basmati','idli rice','idli','dosa','batter','poha','vermicelli','quinoa','couscous',
+        'oatmeal','granola','rice']],
+      ['Pantry','Dals and pulses',['dal','lentil','chana','rajma','moth bean','chickpea','chole',
+        'black eyed pea','urad']],
+      ['Pantry','Pasta',['pasta','spaghetti','penne','noodle','macaroni','gnocchi']],
+      ['Pantry','Oils',['olive oil','vegetable oil','canola','coconut oil','mustard oil','sesame oil','oil']],
+      ['Pantry','',['puffs','flakes','stock','broth','canned',
+        'tin','peanut','cashew','almond','walnut','nut','salt','murumura','ghee']]
+    ];
+
+    function autoCategory(name) {
+      var t = (' ' + String(name).toLowerCase() + ' ').replace(/[^a-z0-9% ]/g, ' ');
+      for (var i = 0; i < CAT_RULES.length; i++) {
+        var kws = CAT_RULES[i][2];
+        for (var j = 0; j < kws.length; j++) {
+          if (t.indexOf(kws[j]) > -1) return { cat: CAT_RULES[i][0], sub: CAT_RULES[i][1] };
+        }
+      }
+      return { cat: 'Uncategorised', sub: '' };
+    }
+
+    // Order categories appear in. Anything unlisted falls in before Uncategorised.
+    var CAT_ORDER = ['Vegetables','Fruit','Herbs and aromatics','Meat and fish','Dairy and eggs',
+      'Bakery','Frozen','Pantry','Condiments and spices','Baking','Snacks','Drinks',
+      'Household','Personal care','Medicine','Stationery and gifts','Uncategorised'];
+    function catRank(c) { var i = CAT_ORDER.indexOf(c); return i === -1 ? CAT_ORDER.length - 1 : i; }
+
     // Custom items per store — user-added items that persist across resets
     /*BAKED_CUSTOM_ITEMS_START*/const BAKED_CUSTOM_ITEMS = {};/*BAKED_CUSTOM_ITEMS_END*/
     
@@ -777,35 +983,12 @@
       });
     }
     
-    if (!items.kowalskis || items.kowalskis.length === 0) {
-      items.kowalskis = buildSortedList('kowalskis');
-    }
-    if (!localStorage.getItem('kowalskisListV2')) {
-      items.kowalskis = buildSortedList('kowalskis');
-      localStorage.setItem('kowalskisListV2', 'true');
-    }
-    if (!items.target || items.target.length === 0) {
-      items.target = buildSortedList('target');
-    }
-    if (!localStorage.getItem('targetListV3')) {
-      items.target = buildSortedList('target');
-      localStorage.setItem('targetListV3', 'true');
-    }
-    if (!items.costco || items.costco.length === 0) {
-      items.costco = buildSortedList('costco');
-    }
-    if (!localStorage.getItem('costcoListV2')) {
-      items.costco = buildSortedList('costco');
-      localStorage.setItem('costcoListV2', 'true');
-    }
-    if (!items.indian || items.indian.length === 0) {
-      items.indian = buildSortedList('indian');
-    }
-    if (!localStorage.getItem('indianListV2')) {
-      items.indian = buildSortedList('indian');
-      localStorage.setItem('indianListV2', 'true');
-    }
+    // The list no longer mirrors the catalogue, so it must NOT be auto-rebuilt.
+    // Anything not on the list is reachable through search or Browse all items.
+    ['kowalskis','target','costco','indian'].forEach(function(st) { if (!items[st]) items[st] = []; });
     localStorage.setItem('groceryListByStore', JSON.stringify(items));
+    migrateToActiveOnly();
+    clearBoughtIfNewDay();
     
     document.getElementById('bg-img').src = IMAGES.brain;
     document.getElementById('showcase-img').src = IMAGES.brain;
@@ -886,9 +1069,8 @@
         var root = document.documentElement;
         root.style.setProperty('--store-accent', currentStore.color);
         root.style.setProperty('--store-color', currentStore.color);
-        document.getElementById('add-button').style.background = 'linear-gradient(135deg, '+currentStore.color+'dd 0%, '+currentStore.color+' 100%)';
-        document.getElementById('add-button').style.boxShadow = '0 4px 16px '+currentStore.color+'50';
-        document.getElementById('history-btn').style.color = currentStore.color;
+        var hb = document.getElementById('history-btn');
+        if (hb) hb.style.color = currentStore.color;
         renderList();
         renderInStoreBanner();
       }, 300);
@@ -915,7 +1097,8 @@
     function captureUndo() {
       undoSnapshot = {
         items: JSON.parse(JSON.stringify(items)),
-        customItems: JSON.parse(JSON.stringify(customItems))
+        customItems: JSON.parse(JSON.stringify(customItems)),
+        removedItems: JSON.parse(JSON.stringify(removedItems))
       };
     }
 
@@ -940,10 +1123,13 @@
       if (!undoSnapshot) { hideToast(); return; }
       items = undoSnapshot.items;
       customItems = undoSnapshot.customItems;
+      if (undoSnapshot.removedItems) removedItems = undoSnapshot.removedItems;
       hideToast();
       saveItems();
       saveCustomItems();
+      saveRemoved();
       renderList();
+      if (browseOpen) renderSheet();
       renderStoresGrid();
     }
 
@@ -972,11 +1158,16 @@
       var qty = (items[currentStore.id] || []).filter(function(i) {
         return i.quantity && i.quantity.trim() !== '';
       }).length;
+      var n = (items[currentStore.id] || []).length;
+      if (!n) { showToast('The list is already empty', false); return; }
       captureUndo();
-      items[currentStore.id] = buildSortedList(currentStore.id);
+      // Under the new model the list holds only what you are buying, so a reset
+      // empties it rather than repopulating it from the catalogue.
+      items[currentStore.id] = [];
       saveItems();
       renderList();
-      showToast(qty ? 'List reset, ' + qty + ' quantit' + (qty === 1 ? 'y' : 'ies') + ' cleared' : 'List reset', true);
+      if (browseOpen) renderSheet();
+      showToast('List cleared, ' + n + ' item' + (n === 1 ? '' : 's') + ' removed', true);
     }
 
     // ---- Remove a single item (swipe left on the row) ----------------------
@@ -1051,132 +1242,356 @@
       return null;
     }
     
-    var searchFilter = '';
-    
-    function onSearchInput() {
-      var input = document.getElementById('search-input');
-      searchFilter = input.value.trim().toLowerCase();
-      var clearBtn = document.getElementById('search-clear');
-      if (searchFilter) {
-        clearBtn.classList.add('visible');
-      } else {
-        clearBtn.classList.remove('visible');
-      }
-      renderList();
+    // ================= CATALOGUE ACCESS =================
+    // The catalogue is derived, never stored: defaults + starter + your custom
+    // items, minus anything you have deleted. items[] holds only what you are
+    // buying or have bought today.
+    var removedItems = {};
+    var savedRemoved = localStorage.getItem('groceryRemovedItems');
+    if (savedRemoved) { try { removedItems = JSON.parse(savedRemoved); } catch (e) { removedItems = {}; } }
+
+    function saveRemoved() {
+      localStorage.setItem('groceryRemovedItems', JSON.stringify(removedItems));
+      debouncedSync();
     }
-    
-    function clearSearch() {
-      var input = document.getElementById('search-input');
-      input.value = '';
-      searchFilter = '';
-      document.getElementById('search-clear').classList.remove('visible');
-      document.getElementById('search-match-count').style.display = 'none';
-      renderList();
+
+    function getCatalogue(storeId) {
+      var out = [], seen = {};
+      var gone = {};
+      (removedItems[storeId] || []).forEach(function(t) { gone[t.toLowerCase()] = 1; });
+      var pools = [STORE_DEFAULTS[storeId] || [], CATALOGUE[storeId] || [], customItems[storeId] || []];
+      pools.forEach(function(list) {
+        list.forEach(function(t) {
+          var k = t.toLowerCase().trim();
+          if (seen[k] || gone[k]) return;
+          seen[k] = 1;
+          var c = autoCategory(t);
+          out.push({ text: t, cat: c.cat, sub: c.sub });
+        });
+      });
+      return out;
     }
-    
-    function matchesFilter(item) {
-      if (!searchFilter) return true;
-      var text = item.text.toLowerCase();
-      // Match if item text contains all words in the search query
-      var words = searchFilter.split(/\s+/).filter(function(w) { return w.length > 0; });
-      return words.every(function(word) { return text.indexOf(word) !== -1; });
+
+    function onListText(storeId) {
+      var m = {};
+      (items[storeId] || []).forEach(function(r) { m[r.text.toLowerCase().trim()] = r; });
+      return m;
     }
-    
+
+    // ---- Bought Today clears when the DATE changes, not on every app open.
+    // Reopening mid-shop must not wipe what is already in the trolley.
+    function clearBoughtIfNewDay() {
+      var today = new Date().toISOString().slice(0, 10);
+      var last = localStorage.getItem('groceryBoughtDay');
+      if (last === today) return;
+      localStorage.setItem('groceryBoughtDay', today);
+      if (!last) return;
+      var changed = false;
+      Object.keys(items).forEach(function(st) {
+        var before = items[st].length;
+        items[st] = items[st].filter(function(r) { return !r.checked; });
+        if (items[st].length !== before) changed = true;
+      });
+      if (changed) saveItems();
+    }
+
+    // ---- One-time migration: the list stops being the catalogue.
+    function migrateToActiveOnly() {
+      if (localStorage.getItem('groceryModelV2')) return;
+      var moved = 0;
+      Object.keys(items).forEach(function(st) {
+        var keep = [];
+        items[st].forEach(function(r) {
+          var hasQty = r.quantity && r.quantity.trim() !== '';
+          if (hasQty || r.checked) keep.push(r); else moved++;
+        });
+        items[st] = keep;
+      });
+      localStorage.setItem('groceryModelV2', '1');
+      console.log('Model v2 migration: ' + moved + ' catalogue-only rows moved out of the list');
+      saveItems();
+    }
+
+    // ================= RENDER =================
     function renderList() {
-      var storeItems = items[currentStore.id] || [];
-      var unchecked = storeItems.filter(function(item) { return !item.checked; });
-      var checked = storeItems.filter(function(item) { return item.checked; });
-      
-      // Apply search filter
-      var filteredUnchecked = unchecked.filter(matchesFilter);
-      var filteredChecked = checked.filter(matchesFilter);
-      
-      var withQuantity = filteredUnchecked.filter(function(item) { return item.quantity && item.quantity.trim() !== ''; });
-      var withoutQuantity = filteredUnchecked.filter(function(item) { return !item.quantity || item.quantity.trim() === ''; });
-      
-      // Show match count when filtering
-      var matchCountEl = document.getElementById('search-match-count');
-      if (searchFilter) {
-        var total = withQuantity.length + withoutQuantity.length + filteredChecked.length;
-        var allTotal = storeItems.length;
-        matchCountEl.textContent = total + ' of ' + allTotal + ' items';
-        matchCountEl.style.display = 'block';
-      } else {
-        matchCountEl.style.display = 'none';
-      }
-      
-      // Item count always uses unfiltered data for the "to buy" header
-      var realWithQuantity = unchecked.filter(function(item) { return item.quantity && item.quantity.trim() !== ''; });
-      document.getElementById('item-count').textContent = realWithQuantity.length === 0 ? '' : realWithQuantity.length + ' item' + (realWithQuantity.length !== 1 ? 's' : '') + ' to buy';
-      
-      var listEl = document.getElementById('items-list');
+      var sid = currentStore.id;
+      var storeItems = items[sid] || [];
+      var buy = storeItems.filter(function(r) { return !r.checked; });
+      var got = storeItems.filter(function(r) { return r.checked; });
+
+      document.getElementById('item-count').textContent =
+        buy.length === 0 ? '' : buy.length + ' item' + (buy.length !== 1 ? 's' : '') + ' to buy';
+
       var html = '';
-      
-      function freqLabel(item) {
-        var count = getPurchaseCount(currentStore.id, item.text);
-        if (count === 0) return '<span class="item-freq-icon">🛒</span> Never purchased';
-        return '<span class="item-freq-icon">🛒</span> Purchased ' + count + ' time' + (count !== 1 ? 's' : '');
-      }
-      
-      function pinHtml(item) {
-        var loc = getItemLocation(currentStore.id, item.text);
-        var hasLoc = loc ? ' has-loc' : '';
-        return '<button class="loc-pin'+hasLoc+'" onclick="event.stopPropagation(); pinTap('+item.id+')" ontouchstart="event.stopPropagation(); pinLpStart('+item.id+')" ontouchend="pinLpEnd('+item.id+')" ontouchcancel="pinLpCancel('+item.id+')" onmousedown="event.stopPropagation(); pinLpStart('+item.id+')" onmouseup="pinLpEnd('+item.id+')" onmouseleave="pinLpCancel('+item.id+')"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg></button>';
-      }
-      
-      function locRow(item) {
-        var loc = getItemLocation(currentStore.id, item.text);
-        if (!loc) return '<div class="loc-display" id="loc-'+item.id+'"></div>';
-        return '<div class="loc-display" id="loc-'+item.id+'"><svg style="width:14px;height:14px;fill:var(--store-accent,#66bb6a);vertical-align:-2px;margin-right:4px" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>'+escapeHtml(loc)+'</div>';
-      }
-      
-      withQuantity.forEach(function(item) {
-        html += '<div class="item-wrapper" data-id="'+item.id+'">';
-        html += '<div class="item-row-priority" ontouchstart="lpStart('+item.id+', event)" ontouchend="lpEnd('+item.id+')" ontouchcancel="lpCancel('+item.id+')" onmousedown="lpStart('+item.id+', event)" onmouseup="lpEnd('+item.id+')" onmouseleave="lpCancel('+item.id+')" onclick="toggleFreq('+item.id+')">';
-        html += '<button class="checkbox" style="border-color: '+currentStore.color+'" onclick="event.stopPropagation(); toggleItem('+item.id+')"></button>';
-        html += '<span class="item-text" id="text-'+item.id+'">'+escapeHtml(item.text)+'</span>';
-        html += pinHtml(item);
-        html += '<input type="text" class="quantity-input-filled" value="'+escapeHtml(item.quantity || '')+'" style="width: '+Math.max(80, Math.min(item.quantity.length * 12 + 20, 220))+'px;" maxlength="20" placeholder="Qty" onclick="event.stopPropagation()" onblur="updateQuantity('+item.id+', this.value)" onkeydown="handleQtyKey(event, '+item.id+', this)">';
-        html += '</div>';
-        html += locRow(item);
-        html += '<div class="item-freq" id="freq-'+item.id+'">'+freqLabel(item)+'</div>';
-        html += '</div>';
-      });
-      
-      if (withQuantity.length > 0 && withoutQuantity.length > 0) {
-        html += '<div class="section-divider"><div class="section-divider-line"></div><span class="section-divider-text">All Items</span><div class="section-divider-line"></div></div>';
-      }
-      
-      withoutQuantity.forEach(function(item) {
-        html += '<div class="item-wrapper" data-id="'+item.id+'">';
-        html += '<div class="item-row" ontouchstart="lpStart('+item.id+', event)" ontouchend="lpEnd('+item.id+')" ontouchcancel="lpCancel('+item.id+')" onmousedown="lpStart('+item.id+', event)" onmouseup="lpEnd('+item.id+')" onmouseleave="lpCancel('+item.id+')" onclick="toggleFreq('+item.id+')">';
-        html += '<span class="item-text" id="text-'+item.id+'">'+escapeHtml(item.text)+'</span>';
-        html += pinHtml(item);
-        html += '<input type="text" class="quantity-input" value="'+escapeHtml(item.quantity || '')+'" maxlength="20" placeholder="Qty" onclick="event.stopPropagation()" onblur="updateQuantity('+item.id+', this.value)" onkeydown="handleQtyKey(event, '+item.id+', this)">';
-        html += '</div>';
-        html += locRow(item);
-        html += '<div class="item-freq" id="freq-'+item.id+'">'+freqLabel(item)+'</div>';
-        html += '</div>';
-      });
-      
-      if (filteredChecked.length > 0) {
-        html += '<div class="divider"><span class="divider-text">✓ '+checked.length+' purchased</span><button class="clear-button" onclick="clearChecked()">×</button></div>';
-        filteredChecked.forEach(function(item) {
-          var loc = getItemLocation(currentStore.id, item.text);
-          var hasLoc = loc ? ' has-loc' : '';
-          html += '<div class="item-row-checked"><button class="checkbox-checked" style="background: linear-gradient(135deg, '+currentStore.color+'dd 0%, '+currentStore.color+' 100%)" onclick="toggleItem('+item.id+')">✓</button><span class="item-text-checked">'+escapeHtml(item.text)+'</span><button class="loc-pin'+hasLoc+'" style="opacity:0.2" onclick="pinTap('+item.id+')"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg></button><input type="text" class="quantity-input-checked" value="'+escapeHtml(item.quantity || '')+'" style="width: '+Math.max(80, Math.min((item.quantity || '').length * 12 + 20, 220))+'px;" maxlength="20" placeholder="Qty" onblur="updateQuantity('+item.id+', this.value)" onkeydown="handleQtyKey(event, '+item.id+', this)"></div>';
+      html += sectionBar('Shopping List');
+      if (!buy.length) {
+        html += '<div class="kk-empty">Nothing on the list yet.<br>Search above to add something.</div>';
+      } else {
+        groupByCat(buy).forEach(function(g) {
+          var f = !!foldedCat['L' + sid + g.cat];
+          html += catHeader(g.cat, f, 'L');
+          html += '<div class="kk-body' + (f ? ' kk-hidden' : '') + '">';
+          g.rows.forEach(function(r) { html += listRow(r); });
+          html += '</div>';
         });
       }
-      
-      if (storeItems.length === 0) {
-        html = '<div class="empty-state"><div class="empty-logo-container"><img src="'+currentStore.image+'" alt="'+currentStore.name+'" class="empty-logo"></div></div>';
-      } else if (searchFilter && withQuantity.length === 0 && withoutQuantity.length === 0 && filteredChecked.length === 0) {
-        html = '<div class="search-no-results"><div class="search-no-results-emoji">🔍</div>No items matching "'+escapeHtml(searchFilter)+'"</div>';
+      html += sectionBar('Bought Today');
+      if (!got.length) {
+        html += '<div class="kk-empty">Nothing bought yet today.</div>';
+      } else {
+        got.forEach(function(r) { html += boughtRow(r); });
       }
-      
-      listEl.innerHTML = html;
+      document.getElementById('items-list').innerHTML = html;
     }
-    
+
+    function sectionBar(label) {
+      return '<div class="section-divider"><div class="section-divider-line"></div>' +
+             '<span class="section-divider-text">' + label + '</span>' +
+             '<div class="section-divider-line"></div></div>';
+    }
+    function catHeader(cat, folded, scope) {
+      return '<button class="kk-cat' + (folded ? ' kk-closed' : '') + '" onclick="toggleCat(\'' +
+        cat.replace(/'/g, "\\'") + '\',\'' + scope + '\')">' +
+        '<span class="kk-pm">' + (folded ? '+' : '\u2212') + '</span>' +
+        '<span class="kk-nm">' + escapeHtml(cat) + '</span></button>';
+    }
+    function groupByCat(rows) {
+      var map = {};
+      rows.forEach(function(r) {
+        var c = r.cat || autoCategory(r.text).cat;
+        (map[c] = map[c] || []).push(r);
+      });
+      return Object.keys(map).sort(function(a, b) { return catRank(a) - catRank(b); })
+        .map(function(c) { return { cat: c, rows: map[c] }; });
+    }
+    var foldedCat = {};
+    function toggleCat(cat, scope) {
+      var k = scope + (scope === 'L' ? currentStore.id : currentStore.id) + cat;
+      foldedCat[k] = !foldedCat[k];
+      if (scope === 'L') renderList(); else renderSheet();
+    }
+
+    function pinFor(text, id) {
+      var loc = getItemLocation(currentStore.id, text);
+      return '<button class="loc-pin' + (loc ? ' has-loc' : '') + '" onclick="event.stopPropagation(); pinTap(' + id + ')"' +
+        ' ontouchstart="event.stopPropagation(); pinLpStart(' + id + ')" ontouchend="pinLpEnd(' + id + ')"' +
+        ' ontouchcancel="pinLpEnd(' + id + ')" onmousedown="pinLpStart(' + id + ')" onmouseup="pinLpEnd(' + id + ')">' +
+        '<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg></button>';
+    }
+    function locRowFor(text, id) {
+      var loc = getItemLocation(currentStore.id, text);
+      if (!loc) return '<div class="loc-display" id="loc-' + id + '"></div>';
+      return '<div class="loc-display" id="loc-' + id + '"><svg style="width:14px;height:14px;fill:var(--store-accent,#66bb6a);vertical-align:-2px;margin-right:4px" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>' + escapeHtml(loc) + '</div>';
+    }
+
+    function listRow(r) {
+      return '<div class="item-wrapper" data-id="' + r.id + '">' +
+        '<div class="item-row-priority" ontouchstart="lpStart(' + r.id + ', event)" ontouchend="lpEnd(' + r.id + ')"' +
+        ' ontouchcancel="lpCancel(' + r.id + ')" onmousedown="lpStart(' + r.id + ', event)" onmouseup="lpEnd(' + r.id + ')"' +
+        ' onmouseleave="lpCancel(' + r.id + ')" onclick="toggleFreq(' + r.id + ')">' +
+        '<button class="checkbox" style="border-color: ' + currentStore.color + '" onclick="event.stopPropagation(); toggleItem(' + r.id + ')"></button>' +
+        '<span class="item-text" id="text-' + r.id + '">' + escapeHtml(r.text) + '</span>' +
+        pinFor(r.text, r.id) +
+        '<input type="text" class="quantity-input-filled" value="' + escapeHtml(r.quantity || '') + '" maxlength="20"' +
+        ' style="width:' + Math.max(64, Math.min((r.quantity || '').length * 11 + 26, 140)) + 'px"' +
+        ' onclick="event.stopPropagation()" onblur="updateQuantity(' + r.id + ', this.value)">' +
+        '</div>' + locRowFor(r.text, r.id) +
+        '<div class="item-freq" id="freq-' + r.id + '"></div></div>';
+    }
+    function boughtRow(r) {
+      return '<div class="item-wrapper" data-id="' + r.id + '">' +
+        '<div class="item-row-checked">' +
+        '<button class="checkbox-checked" style="background:' + currentStore.color + '" onclick="toggleItem(' + r.id + ')"></button>' +
+        '<span class="item-text-checked">' + escapeHtml(r.text) + '</span>' +
+        pinFor(r.text, r.id) + '</div>' + locRowFor(r.text, r.id) + '</div>';
+    }
+    function toggleFreq(id) {
+      var el = document.getElementById('freq-' + id);
+      if (!el) return;
+      var r = (items[currentStore.id] || []).filter(function(x) { return x.id === id; })[0];
+      if (!r) return;
+      if (el.textContent) { el.textContent = ''; el.classList.remove('show'); return; }
+      var n = getPurchaseCount(currentStore.id, r.text);
+      el.textContent = n === 0 ? 'Never purchased' : 'Purchased ' + n + ' time' + (n !== 1 ? 's' : '');
+      el.classList.add('show');
+    }
+
+    // ================= SEARCH =================
+    function kkSearch() {
+      var q = document.getElementById('item-input').value.trim();
+      var box = document.getElementById('kk-sug');
+      if (!q) { box.style.display = 'none'; return; }
+      var ql = q.toLowerCase();
+      var live = onListText(currentStore.id);
+      var hits = getCatalogue(currentStore.id).filter(function(c) {
+        return c.text.toLowerCase().indexOf(ql) > -1 || c.cat.toLowerCase().indexOf(ql) > -1;
+      }).filter(function(c) {
+        var r = live[c.text.toLowerCase().trim()];
+        return !r || !r.checked;
+      }).slice(0, 8);
+
+      var html = '';
+      if (hits.length) {
+        hits.forEach(function(c) {
+          var t = escapeHtml(c.text), k = t.toLowerCase().indexOf(ql), m = t;
+          if (k > -1) m = t.slice(0, k) + '<mark>' + t.slice(k, k + q.length) + '</mark>' + t.slice(k + q.length);
+          var cur = live[c.text.toLowerCase().trim()];
+          html += '<div class="kk-sr"><b>' + m + '</b>' +
+            '<input type="text" class="kk-sq" maxlength="20" placeholder="Qty" value="' +
+            escapeHtml(cur ? (cur.quantity || '') : '') + '" onchange="addFromSearch(this.value, \'' +
+            c.text.replace(/'/g, "\\'").replace(/"/g, '&quot;') + '\')"></div>';
+        });
+      }
+      // cross-store: things you buy elsewhere
+      var others = crossStore(ql);
+      if (others.length) {
+        html += '<div class="kk-sh">Elsewhere</div>';
+        others.slice(0, 4).forEach(function(o) {
+          html += '<div class="kk-sr"><b>' + escapeHtml(o.text) + '<span class="kk-at"> at ' + escapeHtml(o.store) + '</span></b>' +
+            '<input type="text" class="kk-sq" maxlength="20" placeholder="Qty" onchange="addFromSearch(this.value, \'' +
+            o.text.replace(/'/g, "\\'").replace(/"/g, '&quot;') + '\')"></div>';
+        });
+      }
+      if (!hits.length && !others.length) {
+        html = '<div class="kk-add"><div class="kk-addt">No match. Add <b>&ldquo;' + escapeHtml(q) + '&rdquo;</b></div>' +
+               '<button onclick="addNewFromSearch()">+</button></div>';
+      }
+      box.innerHTML = html;
+      box.style.display = 'block';
+    }
+
+    function crossStore(ql) {
+      var mine = {}, out = [];
+      getCatalogue(currentStore.id).forEach(function(c) { mine[c.text.toLowerCase()] = 1; });
+      STORES.forEach(function(s) {
+        if (s.id === currentStore.id) return;
+        getCatalogue(s.id).forEach(function(c) {
+          var k = c.text.toLowerCase();
+          if (mine[k]) return;
+          if (k.indexOf(ql) === -1) return;
+          mine[k] = 1;
+          out.push({ text: c.text, store: s.name });
+        });
+      });
+      return out;
+    }
+
+    function addFromSearch(qty, text) {
+      qty = (qty || '').trim();
+      var sid = currentStore.id;
+      captureUndo();
+      var live = onListText(sid)[text.toLowerCase().trim()];
+      if (!qty) {
+        if (live) items[sid] = items[sid].filter(function(r) { return r.id !== live.id; });
+      } else if (live) {
+        live.quantity = qty; live.checked = false;
+      } else {
+        items[sid] = items[sid] || [];
+        items[sid].unshift({ id: Date.now(), text: text, quantity: qty, checked: false });
+        addCustomItem(sid, text);
+      }
+      undoSnapshot = null;
+      document.getElementById('item-input').value = '';
+      document.getElementById('kk-sug').style.display = 'none';
+      saveItems();
+      renderList();
+      if (browseOpen) renderSheet();
+    }
+
+    function addNewFromSearch() {
+      var el = document.getElementById('item-input');
+      var t = el.value.trim();
+      if (!t || !currentStore) return;
+      var similar = findSimilarItem(currentStore.id, t);
+      captureUndo();
+      items[currentStore.id] = items[currentStore.id] || [];
+      items[currentStore.id].unshift({ id: Date.now(), text: t, quantity: '1', checked: false });
+      addCustomItem(currentStore.id, t);
+      el.value = '';
+      document.getElementById('kk-sug').style.display = 'none';
+      saveItems();
+      renderList();
+      if (browseOpen) renderSheet();
+      if (similar) showToast('Added. Already listed: \u201c' + similar.text + '\u201d', true);
+      else undoSnapshot = null;
+    }
+
+    // ================= BROWSE SHEET =================
+    var browseOpen = false;
+    function openBrowse() {
+      browseOpen = true;
+      renderSheet();
+      document.getElementById('kk-ovl').classList.add('on');
+      document.getElementById('kk-sheet').classList.add('on');
+    }
+    function closeBrowse() {
+      browseOpen = false;
+      document.getElementById('kk-ovl').classList.remove('on');
+      document.getElementById('kk-sheet').classList.remove('on');
+    }
+    function renderSheet() {
+      var sid = currentStore.id;
+      var live = onListText(sid);
+      var rest = getCatalogue(sid).filter(function(c) { return !live[c.text.toLowerCase().trim()]; });
+      var html = '';
+      groupByCat(rest).forEach(function(g) {
+        var key = 'B' + sid + g.cat;
+        var f = foldedCat[key] !== false;
+        html += catHeader(g.cat, f, 'B');
+        html += '<div class="kk-body' + (f ? ' kk-hidden' : '') + '">';
+        var sub = '';
+        g.rows.slice().sort(function(a, b) {
+          return (a.sub || '').localeCompare(b.sub || '') || a.text.toLowerCase().localeCompare(b.text.toLowerCase());
+        }).forEach(function(c) {
+          if (c.sub && c.sub !== sub) { sub = c.sub; html += '<div class="kk-sub">' + escapeHtml(sub) + '</div>'; }
+          html += '<div class="kk-crow"><span class="kk-ct">' + escapeHtml(c.text) + '</span>' +
+            '<input type="text" class="kk-sq" maxlength="20" placeholder="Qty" onchange="addFromSearch(this.value, \'' +
+            c.text.replace(/'/g, "\\'").replace(/"/g, '&quot;') + '\')">' +
+            '<button class="kk-trash" onclick="askDelete(\'' + c.text.replace(/'/g, "\\'").replace(/"/g, '&quot;') + '\')">' +
+            '<svg viewBox="0 0 24 24"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button></div>';
+        });
+        html += '</div>';
+      });
+      document.getElementById('kk-sheet-body').innerHTML = html || '<div class="kk-empty">Everything is on your list.</div>';
+    }
+
+    // ================= DELETE RULES =================
+    // Swipe left on the Shopping List removes from the list only.
+    function removeFromList(id) {
+      var sid = currentStore.id;
+      var r = (items[sid] || []).filter(function(x) { return x.id === id; })[0];
+      if (!r) return;
+      captureUndo();
+      items[sid] = items[sid].filter(function(x) { return x.id !== id; });
+      saveItems();
+      renderList();
+      if (browseOpen) renderSheet();
+      showToast('Removed \u201c' + r.text + '\u201d from your list', true);
+    }
+    // The trash icon in the sheet removes from the catalogue, after confirming.
+    var pendingDelete = null;
+    function askDelete(text) {
+      pendingDelete = text;
+      document.getElementById('kk-cfm-text').textContent =
+        '\u201c' + text + '\u201d will be removed from this store\u2019s list of items. Your purchase history is not affected.';
+      document.getElementById('kk-cfm').classList.add('on');
+    }
+    function cancelDelete() { pendingDelete = null; document.getElementById('kk-cfm').classList.remove('on'); }
+    function confirmDelete() {
+      var text = pendingDelete; pendingDelete = null;
+      document.getElementById('kk-cfm').classList.remove('on');
+      if (!text) return;
+      var sid = currentStore.id;
+      captureUndo();
+      customItems[sid] = (customItems[sid] || []).filter(function(c) { return c.toLowerCase() !== text.toLowerCase(); });
+      removedItems[sid] = removedItems[sid] || [];
+      if (removedItems[sid].indexOf(text) === -1) removedItems[sid].push(text);
+      items[sid] = (items[sid] || []).filter(function(r) { return r.text.toLowerCase() !== text.toLowerCase(); });
+      saveCustomItems(); saveRemoved(); saveItems();
+      renderList(); renderSheet();
+      showToast('Removed \u201c' + text + '\u201d from the catalogue', true);
+    }
+
     function escapeHtml(text) { 
       var d = document.createElement('div'); 
       d.textContent = text; 
@@ -1337,24 +1752,7 @@
       }
     }
     
-    function addItem() {
-      var input = document.getElementById('item-input');
-      var text = input.value.trim();
-      if (text && currentStore) {
-        // Look for a near-duplicate BEFORE inserting, so the new row is not its own match.
-        var similar = findSimilarItem(currentStore.id, text);
-        captureUndo();
-        if (!items[currentStore.id]) items[currentStore.id] = [];
-        items[currentStore.id].unshift({ id: Date.now(), text: text, quantity: '', checked: false });
-        addCustomItem(currentStore.id, text);
-        saveItems();
-        input.value = '';
-        renderList();
-        // Silent unless it looks like something you already have.
-        if (similar) showToast('Added. Already listed: “' + similar.text + '”', true);
-        else undoSnapshot = null;
-      }
-    }
+    function addItem() { addNewFromSearch(); }
     
     function toggleItem(id) {
       if (currentStore) {
@@ -1443,7 +1841,8 @@
       }
     }
     
-    function clearChecked() {
+    function clearChecked() { // superseded by the date-based Bought Today clear
+
       if (currentStore) {
         var n = (items[currentStore.id] || []).filter(function(i) { return i.checked; }).length;
         if (!n) return;
@@ -1615,7 +2014,7 @@
           backToStores();
         } else if (dx < -80 && Math.abs(dx) > Math.abs(dy) * 1.5 && row !== null) {
           // Swipe left on a row: remove that item
-          removeItemById(row);
+          removeFromList(row);
         }
       }, { passive: true });
     })();
@@ -1770,6 +2169,16 @@
        container it would inherit that container's transform during the screen
        transition, and position:fixed would resolve against it instead of the
        viewport, throwing the toast off-screen. -->
+  <div class="kk-ovl" id="kk-ovl" onclick="closeBrowse()"></div>
+  <div class="kk-sheet" id="kk-sheet">
+    <div class="kk-sheet-hd"><h3>All items</h3><button onclick="closeBrowse()">&times;</button></div>
+    <div class="kk-sheet-body" id="kk-sheet-body"></div>
+  </div>
+  <div class="kk-cfm" id="kk-cfm"><div class="kk-cfm-box">
+    <h4>Remove from list of items?</h4>
+    <p id="kk-cfm-text"></p>
+    <div class="kk-cfm-btns"><button class="kk-cfm-no" onclick="cancelDelete()">Keep</button><button class="kk-cfm-yes" onclick="confirmDelete()">Remove</button></div>
+  </div></div>
   <div id="app-toast" class="app-toast" style="display:none;">
     <span id="app-toast-text" class="app-toast-text"></span>
     <button id="app-toast-btn" class="app-toast-btn" onclick="doUndo()">Undo</button>

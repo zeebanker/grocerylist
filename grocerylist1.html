@@ -76,6 +76,11 @@
     .in-store-banner { display: flex; align-items: center; gap: 7px; padding: 4px 2px; margin-bottom: 8px; border-radius: 0; background: none; box-shadow: none; font-size: 12px; font-weight: 500; color: var(--text-secondary); animation: pillFadeIn 0.4s ease both; }
     .in-store-banner-dot { width: 7px; height: 7px; border-radius: 50%; animation: pulse 1.8s ease-in-out infinite; flex-shrink: 0; }
     .in-store-banner-text { flex: 1; }
+    /* Undo / hint toast — dark ground so text always reads on the light app background */
+    .app-toast { position: fixed; left: 12px; right: 12px; bottom: 18px; z-index: 900; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 14px; background: #2d5a3d; color: #ffffff; box-shadow: 0 6px 20px rgba(0,0,0,0.28); font-size: 13.5px; font-weight: 500; animation: pillFadeIn 0.25s ease both; }
+    .app-toast-text { flex: 1; line-height: 1.35; }
+    .app-toast-btn { flex-shrink: 0; background: #ffffff; color: #2d5a3d; border: none; border-radius: 9px; padding: 8px 15px; font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+    .app-toast-btn:active { transform: scale(0.95); }
     .store-card { width: 100%; aspect-ratio: 1 / 1; background: var(--logo-bg); border-radius: 50%; border: none; box-shadow: 0 8px 24px var(--logo-shadow); cursor: pointer; padding: 8px; overflow: hidden; transition: transform 0.2s ease, box-shadow 0.2s ease; animation: scaleIn 0.4s ease-out both; display: flex; align-items: center; justify-content: center; }
     .store-card-wrapper:nth-child(1) .store-card { animation-delay: 0s; }
     .store-card-wrapper:nth-child(2) .store-card { animation-delay: 0.08s; }
@@ -237,7 +242,7 @@
     </div>
     <div id="in-store-banner" style="display:none;"></div>
     <div class="header">
-      <div class="header-logo-container" onclick="clearList()"><img id="header-logo" src="" alt="" class="header-logo"></div>
+      <div class="header-logo-container" onclick="logoTap()" ontouchstart="logoLpStart()" ontouchend="logoLpEnd()" ontouchcancel="logoLpEnd()" onmousedown="logoLpStart()" onmouseup="logoLpEnd()" onmouseleave="logoLpEnd()"><img id="header-logo" src="" alt="" class="header-logo"></div>
       <p id="item-count" class="subtitle"></p>
     </div>
     <div class="input-container">
@@ -469,6 +474,9 @@
         updateSyncStatus(cloud.lastUpdated, false);
       }
       if (changed) {
+        // A change arrived from another device, so our undo snapshot is stale.
+        // Restoring it would silently revert their edit.
+        if (typeof hideToast === 'function') hideToast();
         if (currentStore) renderList();
         renderStoresGrid();
       }
@@ -560,7 +568,7 @@
       'Green bell peppers', 'Red bell peppers', 'Yellow bell peppers', 'Eggplant', 'Kohlrabi',
       'Green peas frozen', 'Radish', 'Zucchini', 'Sweet potato', 'Turnip', 'Turnip greens',
       'Yam', 'Jicama', 'Yellow squash', 'Edamame', 'Green chillies', 'Shallots', 'Poblano peppers',
-      'Jalapeno peppers', '2% milk 1 gal', '2% milk 1/2 gal', 'Whole milk 1 gal', 'Whole milk 1/2 gal',
+      'Jalapeno peppers', '2% milk 1 gal',
       'Buttermilk', 'Eggs', 'Butter', 'Sour cream', 'Cheese slices', 'Shredded cheese',
       'Cream cheese', 'Parmesan cheese', 'Coffee creamer', 'Fresh mozzarella', 'Whole plain yoghurt',
       'Low fat plain yoghurt', 'Greek yoghurt', 'OJ', 'Ice cream', 'Waffles', 'Cereal'
@@ -579,7 +587,7 @@
     
     const TARGET_ITEMS = [
       'Pepperidge Farm cinnamon raisin bread', 'Multigrain Cheerios',
-      'Cornflakes Kellogg', 'Cub, crackers, crackers',
+      'Cornflakes Kellogg',
       'Freeze dried strawberries', 'Mrs.Meyers dish soap', 'Finish rinse aid',
       'Toothpaste'
     ];
@@ -587,9 +595,9 @@
     const INDIAN_ITEMS = [
       'Anapakaaya', 'Beerakaya', 'Banglore vankaya', 'Kakarakaya', 'Small eggplant',
       'Red pumpkin', 'Cut white pumpkin', 'Bacchala koora', 'Gongura', 'Menthi koora',
-      'Thota koora', 'Gongura', 'Radish', 'Dondakaya', 'Chikkudukaya', 'Chama Dumpa',
+      'Thota koora', 'Radish', 'Dondakaya', 'Chikkudukaya', 'Chama Dumpa',
       'Aratikaya', 'Potatoes small', 'Coconut', 'Frozen coconut', 'Frozen drumsticks',
-      'Raw mango', 'Chikkudukaya', 'Mint leaves', 'Aashivaad whole wheat flour',
+      'Raw mango', 'Mint leaves', 'Aashivaad whole wheat flour',
       'Ponni rice zippered pref', 'Plain Urad dal', 'Black urad dal', 'Toor dal',
       'Moong dal', 'Channa', 'Chole chick peas', 'Rajma', 'Black eyed peas', 'Besan',
       'Rice flour', 'Maida', 'Sooji upma rava', 'Peanuts', 'Raisins', 'Cashews', 'Ghee',
@@ -732,14 +740,6 @@
       debouncedSync();
     }
     
-    function localDateStr(d) {
-      if (!d) d = new Date();
-      var y = d.getFullYear();
-      var m = ('0' + (d.getMonth() + 1)).slice(-2);
-      var day = ('0' + d.getDate()).slice(-2);
-      return y + '-' + m + '-' + day;
-    }
-    
     function recordPurchase(storeId, itemText) {
       if (!purchaseHistory[storeId]) purchaseHistory[storeId] = {};
       var key = itemText.toLowerCase().trim();
@@ -747,7 +747,7 @@
         purchaseHistory[storeId][key] = { count: 0, dates: [] };
       }
       purchaseHistory[storeId][key].count++;
-      purchaseHistory[storeId][key].dates.push(localDateStr());
+      purchaseHistory[storeId][key].dates.push(new Date().toISOString().split('T')[0]);
       savePurchaseHistory();
     }
     
@@ -907,12 +907,148 @@
       }, 300);
     }
     
+    // ---- Undo / toast ------------------------------------------------------
+    // One snapshot, one toast, shared by every destructive action.
+    var undoSnapshot = null;
+    var toastTimer = null;
+
+    function captureUndo() {
+      undoSnapshot = {
+        items: JSON.parse(JSON.stringify(items)),
+        customItems: JSON.parse(JSON.stringify(customItems))
+      };
+    }
+
+    function showToast(msg, withUndo) {
+      var t = document.getElementById('app-toast');
+      if (!t) return;
+      document.getElementById('app-toast-text').textContent = msg;
+      document.getElementById('app-toast-btn').style.display = withUndo ? 'block' : 'none';
+      t.style.display = 'flex';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(hideToast, withUndo ? 7000 : 2500);
+    }
+
+    function hideToast() {
+      var t = document.getElementById('app-toast');
+      if (t) t.style.display = 'none';
+      clearTimeout(toastTimer);
+      undoSnapshot = null;
+    }
+
+    function doUndo() {
+      if (!undoSnapshot) { hideToast(); return; }
+      items = undoSnapshot.items;
+      customItems = undoSnapshot.customItems;
+      hideToast();
+      saveItems();
+      saveCustomItems();
+      renderList();
+      renderStoresGrid();
+    }
+
+    // ---- Reset the list (long-press the store logo) -------------------------
+    var logoLpTimer = null;
+    var logoLpFired = false;
+
+    function logoLpStart() {
+      logoLpFired = false;
+      clearTimeout(logoLpTimer);
+      logoLpTimer = setTimeout(function() {
+        logoLpFired = true;
+        clearList();
+      }, 800);
+    }
+
+    function logoLpEnd() { clearTimeout(logoLpTimer); }
+
+    function logoTap() {
+      if (logoLpFired) { logoLpFired = false; return; }
+      showToast('Hold the logo to reset this list', false);
+    }
+
     function clearList() {
-      if (currentStore) {
-        items[currentStore.id] = buildSortedList(currentStore.id);
-        saveItems();
-        renderList();
+      if (!currentStore) return;
+      var qty = (items[currentStore.id] || []).filter(function(i) {
+        return i.quantity && i.quantity.trim() !== '';
+      }).length;
+      captureUndo();
+      items[currentStore.id] = buildSortedList(currentStore.id);
+      saveItems();
+      renderList();
+      showToast(qty ? 'List reset, ' + qty + ' quantit' + (qty === 1 ? 'y' : 'ies') + ' cleared' : 'List reset', true);
+    }
+
+    // ---- Remove a single item (swipe left on the row) ----------------------
+    // Drops it from the list AND from customItems so it does not come back on
+    // the next reset. Purchase history is deliberately left untouched.
+    function removeItemById(id) {
+      if (!currentStore) return;
+      var list = items[currentStore.id] || [];
+      var idx = -1;
+      for (var i = 0; i < list.length; i++) { if (list[i].id === id) { idx = i; break; } }
+      if (idx === -1) return;
+      var removed = list[idx];
+      captureUndo();
+      list.splice(idx, 1);
+      var ci = customItems[currentStore.id] || [];
+      for (var j = 0; j < ci.length; j++) {
+        if (ci[j].toLowerCase() === removed.text.toLowerCase()) { ci.splice(j, 1); saveCustomItems(); break; }
       }
+      saveItems();
+      renderList();
+      showToast('Removed “' + removed.text + '”', true);
+    }
+
+    // ---- Near-duplicate detection for newly added items --------------------
+    var DUP_STOPWORDS = ['the','and','for','with','from','pack','box','bag','can','cans','jar',
+      'large','small','mini','baby','big','one','two','plain','regular','type','other','kind',
+      'size','get','brand','pref','available','variety'];
+
+    function dupWords(s) {
+      return s.toLowerCase()
+        .replace(/[^a-z0-9%\s]/g, ' ')
+        .split(/\s+/)
+        .map(function(w) {
+          // Crude de-pluralisation, but leave words that merely end in s alone
+          // (takis, hummus, glass) or they stop matching themselves.
+          var tail = w.slice(-2);
+          if (w.length > 3 && w.charAt(w.length - 1) === 's' && tail !== 'is' && tail !== 'us' && tail !== 'ss') return w.slice(0, -1);
+          return w;
+        })
+        .filter(function(w) { return (w.length > 2 || w.indexOf('%') !== -1) && DUP_STOPWORDS.indexOf(w) === -1; });
+    }
+
+    // Words that distinguish variants of the same product. If two items each
+    // carry one of these and they differ, they are siblings, not duplicates:
+    // "Green grapes" vs "Red grapes", "Whole milk" vs "2% milk".
+    var DUP_CONTRAST = ['red','green','white','yellow','black','blue','brown','purple','pink',
+      'whole','skim','2%','1%'];
+
+    function contrastWords(w) {
+      return w.filter(function(x) { return DUP_CONTRAST.indexOf(x) !== -1; });
+    }
+
+    function findSimilarItem(storeId, text) {
+      var a = dupWords(text);
+      if (!a.length) return null;
+      var list = items[storeId] || [];
+      for (var i = 0; i < list.length; i++) {
+        var b = dupWords(list[i].text);
+        if (!b.length) continue;
+        var shared = a.filter(function(w) { return b.indexOf(w) !== -1; });
+        if (!shared.length) continue;
+        // Different variants of the same product are not duplicates.
+        var ca = contrastWords(a), cb = contrastWords(b);
+        if (ca.length && cb.length && !ca.some(function(w) { return cb.indexOf(w) !== -1; })) continue;
+        // Both items must be mostly the same words. Measuring against the longer
+        // one as well is what stops category words matching everything: without
+        // it "Ice cream" pairs with "Sour cream" and every Kirkland product
+        // matches every other Kirkland product.
+        if (shared.length / Math.min(a.length, b.length) >= 0.6 &&
+            shared.length / Math.max(a.length, b.length) >= 0.6) return list[i];
+      }
+      return null;
     }
     
     var searchFilter = '';
@@ -1205,12 +1341,18 @@
       var input = document.getElementById('item-input');
       var text = input.value.trim();
       if (text && currentStore) {
+        // Look for a near-duplicate BEFORE inserting, so the new row is not its own match.
+        var similar = findSimilarItem(currentStore.id, text);
+        captureUndo();
         if (!items[currentStore.id]) items[currentStore.id] = [];
         items[currentStore.id].unshift({ id: Date.now(), text: text, quantity: '', checked: false });
         addCustomItem(currentStore.id, text);
         saveItems();
         input.value = '';
         renderList();
+        // Silent unless it looks like something you already have.
+        if (similar) showToast('Added. Already listed: “' + similar.text + '”', true);
+        else undoSnapshot = null;
       }
     }
     
@@ -1302,10 +1444,14 @@
     }
     
     function clearChecked() {
-      if (currentStore) { 
-        items[currentStore.id] = (items[currentStore.id] || []).filter(function(i) { return !i.checked; }); 
-        saveItems(); 
-        renderList(); 
+      if (currentStore) {
+        var n = (items[currentStore.id] || []).filter(function(i) { return i.checked; }).length;
+        if (!n) return;
+        captureUndo();
+        items[currentStore.id] = (items[currentStore.id] || []).filter(function(i) { return !i.checked; });
+        saveItems();
+        renderList();
+        showToast(n + ' purchased item' + (n === 1 ? '' : 's') + ' cleared', true);
       }
     }
     
@@ -1422,32 +1568,54 @@
       var touchStartY = 0;
       var swiping = false;
       
+      var swipeRowId = null;
+
       listScreen.addEventListener('touchstart', function(e) {
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
         swiping = true;
+        // Remember which row this touch started on, for swipe-left-to-remove.
+        swipeRowId = null;
+        var t = e.target;
+        if (t && t.closest && t.tagName !== 'INPUT' && t.tagName !== 'BUTTON') {
+          var wrapper = t.closest('.item-wrapper');
+          if (wrapper && wrapper.dataset && wrapper.dataset.id) {
+            swipeRowId = parseInt(wrapper.dataset.id, 10);
+          }
+        }
       }, { passive: true });
-      
+
       listScreen.addEventListener('touchmove', function(e) {
         if (!swiping) return;
         var dx = e.touches[0].clientX - touchStartX;
         var dy = e.touches[0].clientY - touchStartY;
+        // Once the finger is clearly moving, cancel any pending long-press so a
+        // swipe never opens the inline name editor.
+        if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+          for (var k in lpTimers) { clearTimeout(lpTimers[k]); }
+        }
         // Cancel if scrolling vertically
         if (Math.abs(dy) > Math.abs(dx)) {
           swiping = false;
+          swipeRowId = null;
         }
       }, { passive: true });
-      
+
       listScreen.addEventListener('touchend', function(e) {
         if (!swiping) return;
         var dx = e.changedTouches[0].clientX - touchStartX;
         var dy = e.changedTouches[0].clientY - touchStartY;
+        var row = swipeRowId;
         swiping = false;
+        swipeRowId = null;
+        // Don't act if the history overlay is open
+        if (!document.getElementById('history-overlay').classList.contains('hidden')) return;
         // Swipe right: must travel >80px horizontally and be more horizontal than vertical
         if (dx > 80 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-          // Don't trigger if history overlay is open
-          if (!document.getElementById('history-overlay').classList.contains('hidden')) return;
           backToStores();
+        } else if (dx < -80 && Math.abs(dx) > Math.abs(dy) * 1.5 && row !== null) {
+          // Swipe left on a row: remove that item
+          removeItemById(row);
         }
       }, { passive: true });
     })();
@@ -1583,7 +1751,8 @@
       var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = 'grocery-history-' + localDateStr() + '.csv';
+      var today = new Date().toISOString().split('T')[0];
+      a.download = 'grocery-history-' + today + '.csv';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -1597,5 +1766,13 @@
       });
     }
   </script>
+  <!-- Undo / hint toast. Must be a direct child of body: inside a screen
+       container it would inherit that container's transform during the screen
+       transition, and position:fixed would resolve against it instead of the
+       viewport, throwing the toast off-screen. -->
+  <div id="app-toast" class="app-toast" style="display:none;">
+    <span id="app-toast-text" class="app-toast-text"></span>
+    <button id="app-toast-btn" class="app-toast-btn" onclick="doUndo()">Undo</button>
+  </div>
 </body>
 </html>

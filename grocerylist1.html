@@ -341,7 +341,10 @@
     
     // Clean up stale presence entries older than 2 hours
     function cleanStalePresence() {
-      var cutoff = Date.now() - (2 * 60 * 60 * 1000);
+      // A live device refreshes its entry every 30s, so anything older than
+      // 100s (three missed beats) is a session that died without disconnecting.
+      // This used to be two hours, which left ghosts showing as "online".
+      var cutoff = Date.now() - 100000;
       Object.keys(activePresence).forEach(function(sid) {
         var entry = activePresence[sid];
         if (entry && entry.timestamp && entry.timestamp < cutoff) {
@@ -351,6 +354,7 @@
     }
     
     function setMyPresence(storeId) {
+      presenceStore = storeId || null;
       var data = { timestamp: Date.now(), sid: sessionId };
       if (storeId) {
         data.storeId = storeId;
@@ -465,10 +469,46 @@
       return Math.floor(diff / 3600) + 'h ago';
     }
     
-    // Clean up on page unload
+    // Clean up on page unload. Unreliable on its own (the page can be gone
+    // before the write lands), which is why the heartbeat below is the real
+    // mechanism and onDisconnect is the backstop.
     window.addEventListener('beforeunload', function() {
       myPresenceRef.remove();
     });
+
+    // ---- Presence heartbeat -------------------------------------------------
+    // Without this, an entry's timestamp only moved when you changed screens,
+    // so a short stale window would evict people who were genuinely there.
+    var presenceStore = null;
+    var presenceBeat = null;
+
+    function startPresenceBeat() {
+      if (presenceBeat) return;
+      presenceBeat = setInterval(function() {
+        if (document.visibilityState !== 'visible') return;
+        if (!fbAuthedOrReady()) return;
+        setMyPresence(presenceStore);
+      }, 30000);
+    }
+    function fbAuthedOrReady() { return typeof fbReady === 'undefined' ? true : fbReady; }
+
+    // Drop out of sight when the tab is backgrounded, come back when it returns.
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'visible') {
+        setMyPresence(presenceStore);
+      } else {
+        myPresenceRef.remove().catch(function() {});
+      }
+    });
+
+    // Firebase drops and restores the socket on any network blip. onDisconnect
+    // is consumed when it fires, so it has to be re-armed each time we reconnect.
+    db.ref('.info/connected').on('value', function(snap) {
+      if (snap.val() !== true) return;
+      myPresenceRef.onDisconnect().remove().catch(function() {});
+      if (document.visibilityState === 'visible') setMyPresence(presenceStore);
+    });
+    startPresenceBeat();
     
     // Initial load from cloud
     fbRef.once('value').then(function(snap) {
